@@ -43,8 +43,13 @@ public class TableCellRenderer {
          - borderFillIDRef: 테두리/배경 아이디 참조값
     */
     private void setTc(){
-        renderingCell.nameAnd("").headerAnd(false).hasMarginAnd(false).protectAnd(false)
-                    .editableAnd(false).dirtyAnd(false).borderFillIDRefAnd(rootRenderer.styleRenderer().renderBorderStyle(cell));
+        renderingCell.name("");
+        renderingCell.header(false);
+        renderingCell.hasMargin(false);
+        renderingCell.protect(false);
+        renderingCell.editable(false);
+        renderingCell.dirty(false);
+        renderingCell.borderFillIDRef(rootRenderer.styleRenderer().renderBorderStyle(cell));
     }
 
     /*
@@ -54,7 +59,8 @@ public class TableCellRenderer {
     */
     private void setCellAddr(){
         renderingCell.createCellAddr();
-        renderingCell.cellAddr().colAddrAnd((short) colIdx).rowAddrAnd((short) rowIdx);
+        renderingCell.cellAddr().colAddr((short) colIdx);
+        renderingCell.cellAddr().rowAddr((short) rowIdx);
     }
 
     /*
@@ -64,7 +70,8 @@ public class TableCellRenderer {
     */
     private void setCellSpan() {
         renderingCell.createCellSpan();
-        renderingCell.cellSpan().colSpanAnd((short) 1).rowSpanAnd((short) 1);
+        renderingCell.cellSpan().colSpan((short) 1);
+        renderingCell.cellSpan().rowSpan((short) 1);
     }
 
     /*
@@ -74,8 +81,8 @@ public class TableCellRenderer {
     */
     private void setCellSz(){
         renderingCell.createCellSz();
-        renderingCell.cellSz().widthAnd((long) HWPXUnitUtil.pxToHwpxUnit(col.getWidth()))
-                              .heightAnd((long) HWPXUnitUtil.pxToHwpxUnit(row.getHeight()));
+        renderingCell.cellSz().width((long) HWPXUnitUtil.pxToHwpxUnit(col.getWidth()));
+        renderingCell.cellSz().height((long) HWPXUnitUtil.pxToHwpxUnit(row.getHeight()));
     }
 
     /*
@@ -87,16 +94,30 @@ public class TableCellRenderer {
     */
     private void setCellMargin(){
         renderingCell.createCellMargin();
-        renderingCell.cellMargin().leftAnd((long) 510).rightAnd((long) 510).topAnd((long) 141).bottomAnd((long) 141);
+        renderingCell.cellMargin().left((long) 510);
+        renderingCell.cellMargin().right((long) 510);
+        renderingCell.cellMargin().top((long) 141);
+        renderingCell.cellMargin().bottom((long) 141);
+    }
+
+    private SubList cellSubListDef(){
+        renderingCell.createSubList();
+        SubList sl = renderingCell.subList();
+        sl.id("");
+        sl.textDirection(TextDirection.HORIZONTAL);
+        sl.lineWrap(LineWrapMethod.BREAK);
+        sl.vertAlign(VerticalAlign2.CENTER);
+        sl.linkListIDRef("0");
+        sl.linkListNextIDRef("0");
+        sl.textWidth(0);
+        sl.textHeight(0);
+        sl.hasTextRef(false);
+        sl.hasNumRef(false);
+        return sl;
     }
 
     private void setSubList(){
-        renderingCell.createSubList();
-        SubList sl = renderingCell.subList();
-        renderingCell.subList().idAnd("").textDirectionAnd(TextDirection.HORIZONTAL).lineWrapAnd(LineWrapMethod.BREAK)
-                .vertAlignAnd(VerticalAlign2.CENTER).linkListIDRefAnd("0").linkListNextIDRefAnd("0")
-                .textWidthAnd(0).textHeightAnd(0).hasTextRefAnd(false).hasNumRefAnd(false);
-        setParagraph(sl);
+        setParagraph(cellSubListDef());
     }
 
     private Align alignCheck(Cell cell, Col col) {
@@ -105,7 +126,7 @@ public class TableCellRenderer {
         return Align.Left;
     }
 
-    private void setParagraph(SubList sl){
+    private Para cellParaDef(SubList sl){
         Para cellPara = sl.addNewPara();
         cellPara.id("0");
         cellPara.paraPrIDRef(rootRenderer.styleRenderer().renderParaStyleAndReturnParaPrId(alignCheck(cell, col)));
@@ -113,7 +134,11 @@ public class TableCellRenderer {
         cellPara.pageBreak(false);
         cellPara.columnBreak(false);
         cellPara.merged(false);
-        setRun(cellPara);
+        return cellPara;
+    }
+
+    private void setParagraph(SubList sl){
+        setRun(cellParaDef(sl));
     }
 
     private void setRun(Para cellPara) {
