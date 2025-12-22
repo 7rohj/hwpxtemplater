@@ -43,7 +43,7 @@ implementation 'com.mumberrymountain:hwpxtemplater'
 
 ```java
 import javax.servlet.http.HttpServletResponse;
-import kr.mumberrymountain.hwpxtemplater.HWPXTemplater;
+import com.github.mumberrymountain.HWPXTemplater;
 
 response.setHeader("Content-Disposition", "attachment;filename=" + "hwpxtemplater_output.hwpx" + ";");
 
