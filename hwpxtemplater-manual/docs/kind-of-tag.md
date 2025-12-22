@@ -27,7 +27,7 @@ hwpxTemplater은 기본적으로 `{{`로 시작하고 `}}`로 끝나는 태그 �
 
 ```java
 import javax.servlet.http.HttpServletResponse;
-import kr.mumberrymountain.hwpxtemplater.HWPXTemplater;
+import com.github.mumberrymountain.HWPXTemplater;
 import java.util.*;
 
 HWPXTemplater hwpxTemplater = HWPXTemplater.builder()
@@ -63,7 +63,7 @@ HWPXTemplater hwpxTemplater = HWPXTemplater.builder()
 
 ```java
 import javax.servlet.http.HttpServletResponse;
-import kr.mumberrymountain.hwpxtemplater.HWPXTemplater;
+import com.github.mumberrymountain.HWPXTemplater;
 import java.util.*;
 
 HWPXTemplater hwpxTemplater = HWPXTemplater.builder()
@@ -94,7 +94,7 @@ HWPXTemplater hwpxTemplater = HWPXTemplater.builder()
 
 ```java
 import javax.servlet.http.HttpServletResponse;
-import kr.mumberrymountain.hwpxtemplater.HWPXTemplater;
+import com.github.mumberrymountain.HWPXTemplater;
 import java.util.*;
 
 HWPXTemplater hwpxTemplater = HWPXTemplater.builder()
@@ -139,7 +139,7 @@ HWPXTemplater hwpxTemplater = HWPXTemplater.builder()
 
 ```java
 import javax.servlet.http.HttpServletResponse;
-import kr.mumberrymountain.hwpxtemplater.HWPXTemplater;
+import com.github.mumberrymountain.HWPXTemplater;
 import java.util.*;
 
 ArrayList<HashMap<String, Object>> products = new ArrayList<>();
@@ -198,7 +198,7 @@ hwpx 템플릿 파일에 문자열 데이터가 아닌 특정 이미지를 렌�
 
 ```java
 import javax.servlet.http.HttpServletResponse;
-import kr.mumberrymountain.hwpxtemplater.HWPXTemplater;
+import com.github.mumberrymountain.HWPXTemplater;
 import java.util.*;
 
 HWPXTemplater hwpxTemplater = HWPXTemplater.builder()
@@ -242,9 +242,9 @@ hwpx 템플릿 파일에 문자열 데이터가 아닌 테이블을 삽입하고
 
 ```java
 import javax.servlet.http.HttpServletResponse;
-import kr.mumberrymountain.hwpxtemplater.HWPXTemplater;
-import kr.mumberrymountain.hwpxtemplater.model.table.Col;
-import kr.mumberrymountain.hwpxtemplater.model.table.Table;
+import com.github.mumberrymountain.HWPXTemplater;
+import com.github.mumberrymountain.model.table.Col;
+import com.github.mumberrymountain.model.table.Table;
 
 Table table = Table.builder()
                     .cols(

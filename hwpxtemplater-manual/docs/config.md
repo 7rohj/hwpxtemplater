@@ -23,8 +23,8 @@ HWPXTemplater hwpxTemplater = HWPXTemplater.builder()
 <br>
 
 ```java
-import kr.mumberrymountain.hwpxtemplater.ConfigOption;
-import kr.mumberrymountain.hwpxtemplater.HWPXTemplater;
+import com.github.mumberrymountain.ConfigOption;
+import com.github.mumberrymountain.HWPXTemplater;
 
 HWPXTemplater hwpxTemplater = HWPXTemplater.builder()
                 .config(ConfigOption.DELIM_PREFIX, "[[") // 템플릿 문법의 기본 prefix를 [[로 대체
@@ -49,8 +49,8 @@ HWPXTemplater hwpxTemplater = HWPXTemplater.builder()
 <br>
 
 ```java
-import kr.mumberrymountain.hwpxtemplater.ConfigOption;
-import kr.mumberrymountain.hwpxtemplater.HWPXTemplater;
+import com.github.mumberrymountain.ConfigOption;
+import com.github.mumberrymountain.HWPXTemplater;
 
 HWPXTemplater hwpxTemplater = HWPXTemplater.builder()
                 .config(ConfigOption.DELIM_SUFFIX, "]]") // 템플릿 문법의 기본 suffix를 [[로 대체
@@ -75,9 +75,9 @@ HWPXTemplater hwpxTemplater = HWPXTemplater.builder()
 <br>
 
 ```java
-import kr.mumberrymountain.hwpxtemplater.ConfigOption;
-import kr.mumberrymountain.hwpxtemplater.HWPXTemplater;
-import kr.mumberrymountain.hwpxtemplater.model.CharRole;
+import com.github.mumberrymountain.ConfigOption;
+import com.github.mumberrymountain.HWPXTemplater;
+import com.github.mumberrymountain.model.CharRole;
 
 CharRole charRole = new CharRole();
 charRole.set(PlaceHolderType.CONDITION, '+'); // 조건문 태그를 판별할 때 사용되는 ? 문자를 다른 문자로 + 문자로 대체
@@ -114,8 +114,8 @@ HWPXTemplater hwpxTemplater = HWPXTemplater.builder()
 <br>
 
 ```java
-import kr.mumberrymountain.hwpxtemplater.ConfigOption;
-import kr.mumberrymountain.hwpxtemplater.HWPXTemplater;
+import com.github.mumberrymountain.ConfigOption;
+import com.github.mumberrymountain.HWPXTemplater;
 
 HWPXTemplater hwpxTemplater = HWPXTemplater.builder()
                 .config(ConfigOption.AUTO_TRIM, true) // 데이터를 양쪽의 공백을 자동으로 trim처리
