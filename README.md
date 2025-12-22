@@ -55,7 +55,7 @@ implementation 'com.mumberrymountain:hwpxtemplater'
 ```java
 // 템플릿: {{name}}님 안녕하세요!
 import javax.servlet.http.HttpServletResponse;
-import kr.mumberrymountain.hwpxtemplater.HWPXTemplater;
+import com.github.mumberrymountain.HWPXTemplater;
 import java.util.*;
 
 HWPXTemplater hwpxTemplater = HWPXTemplater.builder()
@@ -91,7 +91,7 @@ HWPXTemplater hwpxTemplater = HWPXTemplater.builder()
 // {{/hasTrackingNumber}}
 
 import javax.servlet.http.HttpServletResponse;
-import kr.mumberrymountain.hwpxtemplater.HWPXTemplater;
+import com.github.mumberrymountain.HWPXTemplater;
 import java.util.*;
 
 HWPXTemplater hwpxTemplater = HWPXTemplater.builder()
@@ -125,7 +125,7 @@ HWPXTemplater hwpxTemplater = HWPXTemplater.builder()
 **예시**:
 ```java
 import javax.servlet.http.HttpServletResponse;
-import kr.mumberrymountain.hwpxtemplater.HWPXTemplater;
+import com.github.mumberrymountain.HWPXTemplater;
 import java.util.*;
 
 // 템플릿:
@@ -172,7 +172,7 @@ HWPXTemplater hwpxTemplater = HWPXTemplater.builder()
 **예시**:
 ```java
 import javax.servlet.http.HttpServletResponse;
-import kr.mumberrymountain.hwpxtemplater.HWPXTemplater;
+import com.github.mumberrymountain.HWPXTemplater;
 import java.util.*;
 
 // 템플릿: {{$flag}}
@@ -209,9 +209,9 @@ HWPXTemplater hwpxTemplater = HWPXTemplater.builder()
 **예시**:
 ```java
 import javax.servlet.http.HttpServletResponse;
-import kr.mumberrymountain.hwpxtemplater.HWPXTemplater;
-import kr.mumberrymountain.hwpxtemplater.model.table.Col;
-import kr.mumberrymountain.hwpxtemplater.model.table.Table;
+import com.github.mumberrymountain.HWPXTemplater;
+import com.github.mumberrymountain.model.table.Col;
+import com.github.mumberrymountain.model.table.Table;
 
 // 템플릿: {{@scoreTable}}
 
@@ -318,9 +318,9 @@ HWPXTemplater hwpxTemplater = HWPXTemplater.builder()
 데이터 렌더링 전 값을 가로채어 가공할 수 있습니다.
 
 ```java
-import kr.mumberrymountain.hwpxtemplater.HWPXTemplater;
-import kr.mumberrymountain.hwpxtemplater.interceptor.Interceptor;
-import kr.mumberrymountain.hwpxtemplater.interceptor.ValueInterceptor;
+import com.github.mumberrymountain.HWPXTemplater;
+import com.github.mumberrymountain.interceptor.Interceptor;
+import com.github.mumberrymountain.interceptor.ValueInterceptor;
 
 import java.text.NumberFormat;
 import java.util.*;
@@ -353,9 +353,9 @@ HWPXTemplater hwpxTemplater = HWPXTemplater.builder()
 null 값에 대해서만 특별한 처리를 할 수 있습니다.
 
 ```java
-import kr.mumberrymountain.hwpxtemplater.HWPXTemplater;
-import kr.mumberrymountain.hwpxtemplater.interceptor.Interceptor;
-import kr.mumberrymountain.hwpxtemplater.interceptor.NullValueInterceptor;
+import com.github.mumberrymountain.HWPXTemplater;
+import com.github.mumberrymountain.interceptor.Interceptor;
+import com.github.mumberrymountain.interceptor.NullValueInterceptor;
 
 import java.text.NumberFormat;
 import java.util.*;
