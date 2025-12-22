@@ -25,13 +25,32 @@ public class FontRenderer {
         return fontId;
     }
 
+    private Font setFont(String fontId) {
+        Font font = fontFace.addNewFont();
+        font.id(fontId);
+        font.type(FontType.TTF);
+        font.isEmbedded(false);
+        font.face(fontFamily);
+        return font;
+    }
+
+    private void setFontTypeInfo(Font font) {
+        font.createTypeInfo();
+        font.typeInfo().familyType(FontFamilyType.FCAT_UNKNOWN);
+        font.typeInfo().weight(0);
+        font.typeInfo().proportion(0);
+        font.typeInfo().contrast(0);
+        font.typeInfo().strokeVariation(0);
+        font.typeInfo().armStyle(false);
+        font.typeInfo().letterform(false);
+        font.typeInfo().midline(252);
+        font.typeInfo().xHeight(255);
+    }
+
     private String addNewFont() {
         String fontId = Integer.toString(fontFace.countOfFont());
-        Font font = fontFace.addNewFont();
-        font.idAnd(fontId).typeAnd(FontType.TTF).isEmbeddedAnd(false).face(fontFamily);
-        font.createTypeInfo();
-        font.typeInfo().familyTypeAnd(FontFamilyType.FCAT_UNKNOWN).weightAnd(0).proportionAnd(0).contrastAnd(0)
-                .strokeVariationAnd(0).armStyleAnd(false).letterformAnd(false).midlineAnd(252).xHeightAnd(255);
+        setFontTypeInfo(setFont(fontId));
+
         return fontId;
     }
 

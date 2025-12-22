@@ -4,6 +4,7 @@ import kr.dogfoot.hwpxlib.object.content.header_xml.enumtype.ImageEffect;
 import kr.dogfoot.hwpxlib.object.content.section_xml.enumtype.*;
 import kr.dogfoot.hwpxlib.object.content.section_xml.paragraph.object.Picture;
 import kr.dogfoot.hwpxlib.object.content.section_xml.paragraph.object.picture.ImageRect;
+import kr.dogfoot.hwpxlib.object.content.section_xml.paragraph.object.shapecomponent.Matrix;
 import kr.dogfoot.hwpxlib.object.content.section_xml.paragraph.object.shapecomponent.RenderingInfo;
 import kr.mumberrymountain.hwpxtemplater.render.image.ImageInfo;
 
@@ -27,9 +28,15 @@ public class PictureRenderer {
         reverse: 그림 색상 반전 여부
     */
     private void setPic(){
-        picture.idAnd(RendererUtil.getRandomId()).zOrderAnd(1).numberingTypeAnd(NumberingType.PICTURE).textWrapAnd(TextWrapMethod.SQUARE)
-                        .textFlowAnd(TextFlowSide.BOTH_SIDES).lockAnd(false).dropcapstyleAnd(DropCapStyle.None)
-                        .groupLevelAnd((short) 0).reverseAnd(false);
+        picture.id(RendererUtil.getRandomId());
+        picture.zOrder(1);
+        picture.numberingType(NumberingType.PICTURE);
+        picture.textWrap(TextWrapMethod.SQUARE);
+        picture.textFlow(TextFlowSide.BOTH_SIDES);
+        picture.lock(false);
+        picture.dropcapstyle(DropCapStyle.None);
+        picture.groupLevel((short) 0);
+        picture.reverse(false);
     }
 
     /*
@@ -39,7 +46,8 @@ public class PictureRenderer {
     */
     private void setOffset(){
         picture.createOffset();
-        picture.offset().xAnd((long) 0).yAnd((long) 0);
+        picture.offset().x((long) 0);
+        picture.offset().y((long) 0);
     }
 
     /*
@@ -49,7 +57,8 @@ public class PictureRenderer {
     */
     private void setOrgSz(){
         picture.createOrgSz();
-        picture.orgSz().widthAnd((long) imageInfo.width()).height((long) imageInfo.height());
+        picture.orgSz().width((long) imageInfo.width());
+        picture.orgSz().height((long) imageInfo.height());
     }
 
     /*
@@ -59,7 +68,8 @@ public class PictureRenderer {
     */
     private void setCurSz(){
         picture.createCurSz();
-        picture.curSz().widthAnd((long) 0).height((long) 0);
+        picture.curSz().width((long) 0);
+        picture.curSz().height((long) 0);
     }
 
     /*
@@ -69,7 +79,8 @@ public class PictureRenderer {
     */
     private void setFilp(){
         picture.createFlip();
-        picture.flip().horizontalAnd(false).vertical(false);
+        picture.flip().horizontal(false);
+        picture.flip().vertical(false);
     }
 
     /*
@@ -80,7 +91,40 @@ public class PictureRenderer {
     */
     private void setRotationInfo(){
         picture.createRotationInfo();
-        picture.rotationInfo().angleAnd((short) 0).centerXAnd((long)0).centerYAnd((long)0).rotateimage(true);
+        picture.rotationInfo().angle((short) 0);
+        picture.rotationInfo().centerX((long) 0);
+        picture.rotationInfo().centerY((long) 0);
+        picture.rotationInfo().rotateimage(true);
+    }
+
+    private void setTransMatrix(RenderingInfo renderingInfo){
+        Matrix transMatrix = renderingInfo.addNewTransMatrix();
+        transMatrix.e1((float) 1);
+        transMatrix.e2((float) 0);
+        transMatrix.e3((float) 0);
+        transMatrix.e4((float) 0);
+        transMatrix.e5((float) 1);
+        transMatrix.e6((float) 0);
+    }
+
+    private void setRotMatrix(RenderingInfo renderingInfo){
+        Matrix rotMatrix = renderingInfo.addNewRotMatrix();
+        rotMatrix.e1((float) 1);
+        rotMatrix.e2((float) 0);
+        rotMatrix.e3((float) 0);
+        rotMatrix.e4((float) 0);
+        rotMatrix.e5((float) 1);
+        rotMatrix.e6((float) 0);
+    }
+
+    private void setScaMatrix(RenderingInfo renderingInfo){
+        Matrix scaMatrix = renderingInfo.addNewScaMatrix();
+        scaMatrix.e1((float) 1);
+        scaMatrix.e2((float) 0);
+        scaMatrix.e3((float) 0);
+        scaMatrix.e4((float) 0);
+        scaMatrix.e5((float) 1);
+        scaMatrix.e6((float) 0);
     }
 
     /*
@@ -91,10 +135,9 @@ public class PictureRenderer {
     */
     private void setRenderingInfo(){
         picture.createRenderingInfo();
-        RenderingInfo ri =  picture.renderingInfo();
-        ri.addNewTransMatrix().e1And((float) 1).e2And((float) 0).e3And((float) 0).e4And((float) 0).e5And((float) 1).e6And((float) 0);
-        ri.addNewRotMatrix().e1And((float) 1).e2And((float) 0).e3And((float) 0).e4And((float) 0).e5And((float) 1).e6And((float) 0);
-        ri.addNewScaMatrix().e1And((float) 1).e2And((float) 0).e3And((float) 0).e4And((float) 0).e5And((float) 1).e6And((float) 0);
+        setTransMatrix(picture.renderingInfo());
+        setRotMatrix(picture.renderingInfo());
+        setScaMatrix(picture.renderingInfo());
     }
 
     /*
@@ -107,7 +150,11 @@ public class PictureRenderer {
     */
     private void setImage(){
         picture.createImg();
-        picture.img().binaryItemIDRefAnd(imageInfo.id()).brightAnd(0).contrastAnd(0).effectAnd(ImageEffect.REAL_PIC).alphaAnd((float) 0);
+        picture.img().binaryItemIDRef(imageInfo.id());
+        picture.img().bright(0);
+        picture.img().contrast(0);
+        picture.img().effect(ImageEffect.REAL_PIC);
+        picture.img().alpha((float) 0);
     }
 
     /*
@@ -151,7 +198,10 @@ public class PictureRenderer {
     */
     private void setInMargin(){
         picture.createInMargin();
-        picture.inMargin().leftAnd((long)0).rightAnd((long)0).topAnd((long)0).bottomAnd((long)0);
+        picture.inMargin().left((long) 0);
+        picture.inMargin().right((long) 0);
+        picture.inMargin().top((long) 0);
+        picture.inMargin().bottom((long) 0);
     }
 
     /*
@@ -161,7 +211,8 @@ public class PictureRenderer {
     */
     private void setImageDim(){
         picture.createImgDim();
-        picture.imgDim().dimwidthAnd((long) imageInfo.width()).dimheight((long) imageInfo.height());
+        picture.imgDim().dimwidth((long) imageInfo.width());
+        picture.imgDim().dimheight((long) imageInfo.height());
     }
 
     /*
@@ -180,8 +231,11 @@ public class PictureRenderer {
     */
     private void setSz(){
         picture.createSZ();
-        picture.sz().widthAnd((long) imageInfo.width()).widthRelToAnd(WidthRelTo.ABSOLUTE).heightAnd((long) imageInfo.height())
-                .heightRelToAnd(HeightRelTo.ABSOLUTE).protectAnd(false);
+        picture.sz().width((long) imageInfo.width());
+        picture.sz().widthRelTo(WidthRelTo.ABSOLUTE);
+        picture.sz().height((long) imageInfo.height());
+        picture.sz().heightRelTo(HeightRelTo.ABSOLUTE);
+        picture.sz().protect(false);
     }
 
     /*
@@ -204,8 +258,17 @@ public class PictureRenderer {
     */
     private void setPos(){
         picture.createPos();
-        picture.pos().treatAsCharAnd(true).affectLSpacingAnd(false).flowWithTextAnd(true).allowOverlapAnd(false).holdAnchorAndSOAnd(false)
-                .vertRelToAnd(VertRelTo.PARA).horzRelToAnd(HorzRelTo.PARA).vertAlignAnd(VertAlign.TOP).horzAlignAnd(HorzAlign.LEFT).vertOffsetAnd((long) 0).horzOffsetAnd((long) 0);
+        picture.pos().treatAsChar(true);
+        picture.pos().affectLSpacing(false);
+        picture.pos().flowWithText(true);
+        picture.pos().allowOverlap(false);
+        picture.pos().holdAnchorAndSO(false);
+        picture.pos().vertRelTo(VertRelTo.PARA);
+        picture.pos().horzRelTo(HorzRelTo.PARA);
+        picture.pos().vertAlign(VertAlign.TOP);
+        picture.pos().horzAlign(HorzAlign.LEFT);
+        picture.pos().vertOffset((long) 0);
+        picture.pos().horzOffset((long) 0);
     }
 
     /*
