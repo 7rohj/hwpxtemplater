@@ -41,3 +41,4 @@ bin/
 
 gradle.properties
 secring.gpg
+publish.sh
