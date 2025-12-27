@@ -14,7 +14,7 @@ tasks.withType(Javadoc) {
     failOnError = false
 }
 
-group = 'com.github.mumberrymountain'
+group = 'io.github.mumberrymountain'
 version = '0.1.0-SNAPSHOT'
 
 java {

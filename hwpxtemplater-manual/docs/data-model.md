@@ -9,8 +9,8 @@
 ---
 
 ```java
-import com.github.mumberrymountain.HWPXTemplater;
-import com.github.mumberrymountain.model.Text;
+import io.github.mumberrymountain.HWPXTemplater;
+import io.github.mumberrymountain.model.Text;
 
 import java.util.*;
 
@@ -46,8 +46,8 @@ HWPXTemplater hwpxTemplater = HWPXTemplater.builder()
 ---
 
 ```java
-import com.github.mumberrymountain.HWPXTemplater;
-import com.github.mumberrymountain.model.Image;
+import io.github.mumberrymountain.HWPXTemplater;
+import io.github.mumberrymountain.model.Image;
 
 import java.util.*;
 
@@ -80,9 +80,9 @@ HWPXTemplater hwpxTemplater = HWPXTemplater.builder()
 
 ```java
 import javax.servlet.http.HttpServletResponse;
-import com.github.mumberrymountain.HWPXTemplater;
-import com.github.mumberrymountain.model.table.Col;
-import com.github.mumberrymountain.model.table.Table;
+import io.github.mumberrymountain.HWPXTemplater;
+import io.github.mumberrymountain.model.table.Col;
+import io.github.mumberrymountain.model.table.Table;
 
 Table table = Table.builder()
                     .cols(

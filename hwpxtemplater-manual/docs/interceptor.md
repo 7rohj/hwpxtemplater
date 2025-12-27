@@ -23,9 +23,9 @@ HWPXTemplater hwpxTemplater = HWPXTemplater.builder()
 ---
 
 ```java
-import com.github.mumberrymountain.HWPXTemplater;
-import com.github.mumberrymountain.interceptor.Interceptor;
-import com.github.mumberrymountain.interceptor.ValueInterceptor;
+import io.github.mumberrymountain.HWPXTemplater;
+import io.github.mumberrymountain.interceptor.Interceptor;
+import io.github.mumberrymountain.interceptor.ValueInterceptor;
 
 import java.text.NumberFormat;
 import java.util.*;
@@ -66,9 +66,9 @@ HWPXTemplater hwpxTemplater = HWPXTemplater.builder()
 ---
 
 ```java
-import com.github.mumberrymountain.HWPXTemplater;
-import com.github.mumberrymountain.interceptor.Interceptor;
-import com.github.mumberrymountain.interceptor.NullValueInterceptor;
+import io.github.mumberrymountain.HWPXTemplater;
+import io.github.mumberrymountain.interceptor.Interceptor;
+import io.github.mumberrymountain.interceptor.NullValueInterceptor;
 
 import java.text.NumberFormat;
 import java.util.*;
