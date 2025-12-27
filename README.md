@@ -24,7 +24,7 @@ HWPXTemplater는 HWPX 템플릿 파일을 기반으로 데이터를 주입하여
 ### Maven
 ```xml
 <dependency>
-  <groupId>com.mumberrymountain</groupId>
+  <groupId>io.github.mumberrymountain</groupId>
   <artifactId>hwpxtemplater</artifactId>
 </dependency>
 ```
@@ -33,7 +33,7 @@ gradle을 사용하시는 경우에는 아래의 implementation을 build.gradle 
 
 ### Gradle
 ```gradle
-implementation 'com.mumberrymountain:hwpxtemplater'
+implementation 'io.github.mumberrymountain:hwpxtemplater'
 ```
 
 &nbsp;
