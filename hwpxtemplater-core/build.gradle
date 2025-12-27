@@ -1,5 +1,17 @@
 plugins {
     id 'java'
+    id 'maven-publish'
+    id 'signing'
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+tasks.withType(Javadoc) {
+    options.encoding = 'UTF-8'
+    options.addStringOption('Xdoclint:none', '-quiet')
+    failOnError = false
 }
 
 group = 'com.github.mumberrymountain'
@@ -8,6 +20,9 @@ version = '0.1.0-SNAPSHOT'
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
+
+    withJavadocJar()
+    withSourcesJar()
 }
 
 repositories {
@@ -22,4 +37,45 @@ dependencies {
 
 test {
     useJUnitPlatform()
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+
+            artifactId = 'hwpxtemplater'
+
+            pom {
+                name = 'HwpxTemplater'
+                description = 'Template library to produce HWPX documents'
+                url = 'https://github.com/mumberrymountain/hwpxtemplater'
+
+                licenses {
+                    license {
+                        name = 'MIT License'
+                        url = 'https://opensource.org/licenses/MIT'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id = 'mumberrymountain'
+                        name = 'Jeon Insoo'
+                        email = 'mumberrymountain@gmail.com'
+                    }
+                }
+
+                scm {
+                    connection = 'scm:git:git://github.com/mumberrymountain/hwpxtemplater.git'
+                    developerConnection = 'scm:git:ssh://github.com/mumberrymountain/hwpxtemplater.git'
+                    url = 'https://github.com/mumberrymountain/hwpxtemplater'
+                }
+            }
+        }
+    }
+}
+
+signing {
+    sign publishing.publications.mavenJava
 }
