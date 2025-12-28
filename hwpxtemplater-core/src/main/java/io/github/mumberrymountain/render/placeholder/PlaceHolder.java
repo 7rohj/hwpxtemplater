@@ -14,7 +14,6 @@ public class PlaceHolder {
     private final String data;
 
     private final DelimPos delimPos;
-    private char typeChar;
 
     public PlaceHolder(T t, String delimStart, String delimEnd) {
         this(null, t, delimStart, delimEnd);
@@ -31,7 +30,6 @@ public class PlaceHolder {
     }
 
     private void checkType(char typeChar){
-        this.typeChar = typeChar;
         if (RendererUtil.isFullWidthPlaceHolder(typeChar)) typeChar = RendererUtil.normalizeFullWidthPlaceHolder(typeChar);
         for (PlaceHolderType placeholderType : PlaceHolderType.values()) {
             Character mappedChar = PlaceHolderCharRole.get(placeholderType);

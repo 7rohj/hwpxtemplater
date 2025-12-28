@@ -1,5 +1,6 @@
 package io.github.mumberrymountain.render;
 
+import io.github.mumberrymountain.model.table.Cell;
 import kr.dogfoot.hwpxlib.object.content.section_xml.SectionXMLFile;
 import io.github.mumberrymountain.Config;
 import io.github.mumberrymountain.ConfigOption;
@@ -57,6 +58,14 @@ public class RendererUtil {
         return String.join(";",
                 String.valueOf(align)
                );
+    }
+
+    public static String createBorderStyleKey(Cell cell) {
+        return String.join(";",
+                String.valueOf(cell.getBorderColor()),
+                String.valueOf(cell.getBackgroundColor()),
+                String.valueOf(cell.isBorder())
+        );
     }
 
     public static boolean isFullWidthPlaceHolder(char c) {
