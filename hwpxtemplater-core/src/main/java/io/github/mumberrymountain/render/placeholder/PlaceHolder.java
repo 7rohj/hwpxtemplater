@@ -1,5 +1,6 @@
 package io.github.mumberrymountain.render.placeholder;
 
+import io.github.mumberrymountain.render.RendererUtil;
 import kr.dogfoot.hwpxlib.object.content.section_xml.paragraph.T;
 import io.github.mumberrymountain.delim.DelimPos;
 import io.github.mumberrymountain.linkedobj.LinkedRunItem;
@@ -31,6 +32,7 @@ public class PlaceHolder {
 
     private void checkType(char typeChar){
         this.typeChar = typeChar;
+        if (RendererUtil.isFullWidthPlaceHolder(typeChar)) typeChar = RendererUtil.normalizeFullWidthPlaceHolder(typeChar);
         for (PlaceHolderType placeholderType : PlaceHolderType.values()) {
             Character mappedChar = PlaceHolderCharRole.get(placeholderType);
             if (mappedChar != null && mappedChar == typeChar) {

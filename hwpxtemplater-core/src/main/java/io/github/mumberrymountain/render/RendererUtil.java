@@ -58,4 +58,19 @@ public class RendererUtil {
                 String.valueOf(align)
                );
     }
+
+    public static boolean isFullWidthPlaceHolder(char c) {
+        return c == '？' || c == '＃' || c == '／' || c == '＄' || c == '＠';
+    }
+
+    public static char normalizeFullWidthPlaceHolder(char c) {
+        switch (c) {
+            case '？': return '?';
+            case '＃': return '#';
+            case '／': return '/';
+            case '＄': return '$';
+            case '＠': return '@';
+            default: return c;
+        }
+    }
 }
