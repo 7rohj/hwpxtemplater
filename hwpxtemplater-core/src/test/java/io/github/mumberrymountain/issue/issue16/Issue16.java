@@ -1,6 +1,10 @@
 package io.github.mumberrymountain.issue.issue16;
 
+import io.github.mumberrymountain.util.PicFilter;
+import kr.dogfoot.hwpxlib.object.common.ObjectList;
+import kr.dogfoot.hwpxlib.object.content.context_hpf.ManifestItem;
 import kr.dogfoot.hwpxlib.object.content.section_xml.paragraph.T;
+import kr.dogfoot.hwpxlib.object.content.section_xml.paragraph.object.Picture;
 import kr.dogfoot.hwpxlib.tool.finder.ObjectFinder;
 import io.github.mumberrymountain.HWPXTemplater;
 import io.github.mumberrymountain.util.ParaTFilter;
@@ -14,6 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class Issue16 {
     @Test
