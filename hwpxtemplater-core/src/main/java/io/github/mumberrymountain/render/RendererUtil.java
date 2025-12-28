@@ -63,7 +63,8 @@ public class RendererUtil {
     public static String createBorderStyleKey(Cell cell) {
         return String.join(";",
                 String.valueOf(cell.getBorderColor()),
-                String.valueOf(cell.getBackgroundColor())
+                String.valueOf(cell.getBackgroundColor()),
+                String.valueOf(cell.isBorder())
         );
     }
 
