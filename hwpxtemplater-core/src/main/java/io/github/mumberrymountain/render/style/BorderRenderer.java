@@ -82,7 +82,7 @@ public class BorderRenderer {
         fillBrush.winBrush().alpha((float) 0);
     }
 
-    public String render(){
+    public BorderFill render(){
         setId();
 
         if (cell.isBorder()) {
@@ -96,7 +96,6 @@ public class BorderRenderer {
         setFillBrush(cell.getBackgroundColor(), "#000000");
 
         headerXMLFile.refList().borderFills().add(borderFill);
-
-        return borderFill.id();
+        return borderFill;
     }
 }

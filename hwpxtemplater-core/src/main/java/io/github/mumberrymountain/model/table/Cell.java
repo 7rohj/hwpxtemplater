@@ -4,7 +4,7 @@ import io.github.mumberrymountain.model.Text;
 
 public class Cell {
     private final Text text;
-    private String backgroundColor = "None";
+    private String backgroundColor = "#FFFFFF";
     private boolean border = true;
     private String borderColor = "#000000";
     private Align align;

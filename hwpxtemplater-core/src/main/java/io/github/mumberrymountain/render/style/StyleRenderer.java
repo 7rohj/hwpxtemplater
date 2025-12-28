@@ -1,6 +1,7 @@
 package io.github.mumberrymountain.render.style;
 
 import kr.dogfoot.hwpxlib.object.content.header_xml.HeaderXMLFile;
+import kr.dogfoot.hwpxlib.object.content.header_xml.references.BorderFill;
 import kr.dogfoot.hwpxlib.object.content.header_xml.references.CharPr;
 import kr.dogfoot.hwpxlib.object.content.header_xml.references.ParaPr;
 import io.github.mumberrymountain.model.Text;
@@ -15,6 +16,7 @@ public class StyleRenderer {
     private final HeaderXMLFile headerXMLFile;
     private final Map<String, CharPr> charPrs = new HashMap<String, CharPr>();
     private final Map<String, ParaPr> paraPrs = new HashMap<String, ParaPr>();
+    private final Map<String, BorderFill> borderFillIds = new HashMap<String, BorderFill>();
 
     public StyleRenderer (HeaderXMLFile headerXMLFile){
         this.headerXMLFile = headerXMLFile;
@@ -35,7 +37,13 @@ public class StyleRenderer {
     }
 
     public String renderBorderStyle(Cell cell) {
-        return new BorderRenderer(headerXMLFile, cell).render();
+        String key = RendererUtil.createBorderStyleKey(cell);
+        if (borderFillIds.containsKey(key)) return borderFillIds.get(key).id();
+
+        BorderFill borderFill = new BorderRenderer(headerXMLFile, cell).render();
+        borderFillIds.put(key, borderFill);
+
+        return borderFill.id();
     }
 
     public String renderParaStyleAndReturnParaPrId(Align align) {
