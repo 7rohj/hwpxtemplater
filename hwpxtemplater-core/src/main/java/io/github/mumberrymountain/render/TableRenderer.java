@@ -36,11 +36,24 @@ public class TableRenderer {
          - borderFillIDRef: 테두리/배경 아이디 참조값
     */
     private void setTable(){
-        renderingTable.idAnd(RendererUtil.getRandomId()).rowCntAnd((short) table.getRowCount()).colCntAnd((short) table.getColCount())
-                    .numberingTypeAnd(NumberingType.TABLE).textWrapAnd(TextWrapMethod.TOP_AND_BOTTOM)
-                    .textFlowAnd(TextFlowSide.BOTH_SIDES).lockAnd(false).dropcapstyleAnd(DropCapStyle.None)
-                    .pageBreakAnd(TablePageBreak.CELL).repeatHeaderAnd(true).noAdjustAnd(false)
-                    .cellSpacingAnd(0).zOrderAnd(-1).borderFillIDRefAnd("3");
+    boolean repeatHeader = true;
+    Object opt = table.getConfig("repeatHeader");
+    if (opt instanceof Boolean) repeatHeader = (Boolean) opt;
+
+    renderingTable.idAnd(RendererUtil.getRandomId())
+        .rowCntAnd((short) table.getRowCount())
+        .colCntAnd((short) table.getColCount())
+        .numberingTypeAnd(NumberingType.TABLE)
+        .textWrapAnd(TextWrapMethod.TOP_AND_BOTTOM)
+        .textFlowAnd(TextFlowSide.BOTH_SIDES)
+        .lockAnd(false)
+        .dropcapstyleAnd(DropCapStyle.None)
+        .pageBreakAnd(TablePageBreak.CELL)
+        .repeatHeaderAnd(repeatHeader)
+        .noAdjustAnd(false)
+        .cellSpacingAnd(0)
+        .zOrderAnd(-1)
+        .borderFillIDRefAnd("3");
     }
 
     /*
