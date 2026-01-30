@@ -45,13 +45,14 @@ public class Table {
     }    
     
     public static class builder {
-        HashMap<String, Object> config;
+        HashMap<String, Object> config = new HashMap();
         ArrayList<Col> cols;
         ArrayList<Row> rows = new ArrayList<>();
         ArrayList<HashMap<String, ?>> rowsParam = new ArrayList<>();
 
-        public void config(String option, Object value){
+        public builder config(String option, Object value){
             config.put(option, value);
+            return this;
         }
 
         public builder cols(List<Col> cols){
@@ -140,7 +141,9 @@ public class Table {
 
 
         public Table create(){
-            return new Table(rows, cols);
+            Table t = new Table(rows, cols);
+            t.config.putAll(config);
+            return t;
         }
     }
 }
