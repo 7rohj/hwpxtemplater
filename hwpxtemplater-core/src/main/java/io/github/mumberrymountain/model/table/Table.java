@@ -66,6 +66,11 @@ public class Table {
             return colNames;
         }
 
+        public builder headerRow(HashMap<String, ?> row) {
+            rows.add(convertRow(row, RowType.Header));
+            return this;
+        }    
+
         private void addCellIntoRow(HashMap<Col, Cell> row, ArrayList colNames, String key, Object value){
             if (colNames.indexOf(key) == -1) return;
             Col col = cols.get(colNames.indexOf(key));
