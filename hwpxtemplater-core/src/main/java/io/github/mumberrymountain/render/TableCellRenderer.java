@@ -45,7 +45,10 @@ public class TableCellRenderer {
     */
     private void setTc(){
         renderingCell.name("");
-        renderingCell.header(row.getRowType() == RowType.Header);
+
+        boolean isHeader = (row != null && row.getRowType() == RowType.Header);
+        renderingCell.header(isHeader);
+    
         renderingCell.hasMargin(false);
         renderingCell.protect(false);
         renderingCell.editable(false);
