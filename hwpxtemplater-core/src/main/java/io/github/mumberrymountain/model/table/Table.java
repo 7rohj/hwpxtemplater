@@ -67,7 +67,8 @@ public class Table {
         }
 
         public builder headerRow(HashMap<String, ?> row) {
-            rows.add(convertRow(row, RowType.Header));
+            Row header = convertRow(row, RowType.Header);
+            rows.add(header);
             return this;
         }    
 
