@@ -14,6 +14,10 @@ public class Row {
         this.rowType = rowType;
     }
 
+    public RowType getRowType() {
+        return rowType;
+    }    
+
     public void type (RowType rowType) {
         this.rowType = rowType;
     }
