@@ -6,14 +6,14 @@ import java.util.List;
 import java.util.Map;
 
 public class Table {
-    private final HashMap<String, Object> config = new HashMap<>();
-
+    private final HashMap<String, Object> config;
     private final ArrayList<Row> rows;
     private final ArrayList<Col> cols;
 
-    public Table (ArrayList<Row> rows, ArrayList<Col> cols) {
+    public Table(ArrayList<Row> rows, ArrayList<Col> cols, HashMap<String, Object> config) {
         this.rows = rows;
         this.cols = cols;
+        this.config = (config == null) ? new HashMap<>() : config;
     }
 
     public int getColCount() {
@@ -146,9 +146,7 @@ public class Table {
 
 
         public Table create(){
-            Table t = new Table(rows, cols);
-            t.config.putAll(config);
-            return t;
+            return new Table(rows, cols, config);
         }
     }
 }
