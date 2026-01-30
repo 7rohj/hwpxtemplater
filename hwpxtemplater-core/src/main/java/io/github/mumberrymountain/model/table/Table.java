@@ -40,6 +40,10 @@ public class Table {
         return new builder();
     }
 
+    public Object getConfig(String key) {
+        return config.get(key);
+    }    
+    
     public static class builder {
         HashMap<String, Object> config;
         ArrayList<Col> cols;
