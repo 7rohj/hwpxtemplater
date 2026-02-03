@@ -108,18 +108,6 @@ public class TableRenderer {
                             .vertOffsetAnd((long) 0).horzOffsetAnd((long) 0);
     }
 
-    private void setTblGrid() {
-        renderingTable.createTblGrid();
-        TblGrid grid = renderingTable.tblGrid();
-
-        for (int i = 0; i < table.getColCount(); i++) {
-            int colWidthMm = table.getCol(i).getWidth(); // Col.width() 값 (mm로 해석)
-
-            GridCol gc = grid.addNewGridCol();
-            gc.widthAnd(mmToHwpUnit(colWidthMm));
-        }
-    }    
-
     /*
         sz: 객체들의 크기 정보를 가진 요소
          - width: 객체 너비
@@ -132,23 +120,26 @@ public class TableRenderer {
         
         long totalWidth = 0;
         for (int i = 0; i < table.getColCount(); i++) {
-            totalWidth += mmToHwpUnit(table.getCol(i).getWidth());
+            totalWidth += (long) HWPXUnitUtil.pxToHwpxUnit(table.getCol(i).getWidth());
         }
+
+        if (totalWidth <= 0) totalWidth = 42522;
         
         renderingTable.sz().widthAnd(totalWidth).widthRelToAnd(WidthRelTo.ABSOLUTE)
                             .heightAnd((long) 1284).heightRelToAnd(HeightRelTo.ABSOLUTE).protectAnd(false);
     }
 
+    /*
     private static long mmToHwpUnit(double mm) {
         return Math.round(mm * 7200.0 / 25.4);
     }
+    */
 
     public Table render(){
         setTable();
         setOutMargin();
         setInMargin();
         setPos();
-        setTblGrid();
         setSz();
 
         // 헤더행 렌더링
