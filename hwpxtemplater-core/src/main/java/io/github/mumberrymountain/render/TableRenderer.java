@@ -23,8 +23,23 @@ public class TableRenderer {
         Tr tr = renderingTable.addNewTr();
 
         for (int colIdx = 0; colIdx < table.getColCount(); colIdx++) {
-            new TableCellRenderer(rootRenderer, tr.addNewTc(), rowIdx, colIdx,
-                    table).render();
+            Object cellObj = table.getCell(rowIdx, colIdx);
+            if (isCoveredCell(cellObj)) {
+                continue;
+            }
+            new TableCellRenderer(rootRenderer, tr.addNewTc(), rowIdx, colIdx, table).render();
+        }
+    }
+
+    private boolean isCoveredCell(Object cellObj) {
+        if (cellObj == null) return false;
+
+        try {
+            java.lang.reflect.Method m = cellObj.getClass().getMethod("isCovered");
+            Object r = m.invoke(cellObj);
+            return (r instanceof Boolean) && (Boolean) r;
+        } catch (Exception e) {
+            return false;
         }
     }
 
