@@ -21,8 +21,6 @@ public class TableCellRenderer {
     private final Cell cell;
     private final Col col;
     private final Row row;
-
-    private int paraSeq = 0;
     
     public TableCellRenderer(HWPXRenderer rootRenderer, Tc renderingCell, int rowIdx, int colIdx, Table tableParam) {
         this.rootRenderer = rootRenderer;
@@ -55,7 +53,10 @@ public class TableCellRenderer {
         renderingCell.protect(false);
         renderingCell.editable(false);
         renderingCell.dirty(false);
-        renderingCell.borderFillIDRef(rootRenderer.styleRenderer().renderBorderStyle(cell));
+
+        renderingCell.borderFillIDRef(
+            rootRenderer.styleRenderer().renderBorderStyle(cell, tableParam, rowIdx, colIdx)
+        );
     }
 
     /*
@@ -76,17 +77,18 @@ public class TableCellRenderer {
     */
     private void setCellSpan() {
         renderingCell.createCellSpan();
-        
-        int cs = cell.getColSpan();
-        int rs = cell.getRowSpan();
 
-        if (cell.isCovered()) {
+        if (cell != null && cell.isCovered()) {
             renderingCell.cellSpan().colSpan((short) 0);
             renderingCell.cellSpan().rowSpan((short) 0);
             return;
         }
-        renderingCell.cellSpan().colSpan((short) Math.max(cs, 1));
-        renderingCell.cellSpan().rowSpan((short) Math.max(rs, 1));
+
+        int cs = (cell == null) ? 1 : Math.max(cell.getColSpan(), 1);
+        int rs = (cell == null) ? 1 : Math.max(cell.getRowSpan(), 1);
+
+        renderingCell.cellSpan().colSpan((short) cs);
+        renderingCell.cellSpan().rowSpan((short) rs);
     }
 
     /*
@@ -98,14 +100,14 @@ public class TableCellRenderer {
         renderingCell.createCellSz();
 
         // covered 셀은 0으로 두는 게 안전
-        if (cell.isCovered()) {
+        if (cell != null && cell.isCovered()) {
             renderingCell.cellSz().width(0L);
             renderingCell.cellSz().height(0L);
             return;
         }
 
-        int cs = Math.max(cell.getColSpan(), 1);
-        int rs = Math.max(cell.getRowSpan(), 1);
+        int cs = (cell == null) ? 1 : Math.max(cell.getColSpan(),1);
+        int rs = (cell == null) ? 1 : Math.max(cell.getRowSpan(),1);
 
         int widthPx = 0;
         for (int c = colIdx; c < colIdx + cs; c++) {
@@ -119,8 +121,8 @@ public class TableCellRenderer {
             if (rObj != null) heightPx += rObj.getHeight();
         }
 
-        renderingCell.cellSz().width((long) HWPXUnitUtil.pxToHwpxUnit((int) widthPx));
-        renderingCell.cellSz().height((long) HWPXUnitUtil.pxToHwpxUnit((int) heightPx));
+        renderingCell.cellSz().width((long) HWPXUnitUtil.pxToHwpxUnit(widthPx);
+        renderingCell.cellSz().height((long) HWPXUnitUtil.pxToHwpxUnit(heightPx);
     }
 
     /*
@@ -163,22 +165,15 @@ public class TableCellRenderer {
         return sl;
     }
 
-    private void setSubList(){
-        setParagraph(cellSubListDef());
-    }
-
     private Align alignCheck(Cell cell, Col col) {
-        if (cell.getAlign() != null) return cell.getAlign();
-        if (col.getAlign() != null) return col.getAlign();
+        if (cell != null && cell.getAlign() != null) return cell.getAlign();
+        if (col != null && col.getAlign() != null) return col.getAlign();
         return Align.Left;
     }
 
     private Para cellParaDef(SubList sl) {
         Para cellPara = sl.addNewPara();
-
-        // Para id 중복 방지
-        cellPara.id(String.valueOf(paraSeq++));  // "0", "1", "2"...
-
+        cellPara.id("0");
         cellPara.paraPrIDRef(
                 rootRenderer.styleRenderer().renderParaStyleAndReturnParaPrId(alignCheck(cell, col))
         );
@@ -189,27 +184,28 @@ public class TableCellRenderer {
         return cellPara;
     }
 
-    private void setParagraph(SubList sl){
-        setRun(cellParaDef(sl));
-    }
-
     private void setRun(Para cellPara) {
         Run cellRun = cellPara.addNewRun();
         T cellT = cellRun.addNewT();
 
-        String val = cell.getText().getValue();
+        String val = (cell == null) ? "" : cell.getText().getValue();
         if (RendererUtil.isAutoTrim(rootRenderer.config())) val = val.trim();
 
         cellT.addText(val);
-        cellRun.charPrIDRef(rootRenderer.styleRenderer().renderCharStyleAndReturnCharPrId(cell.getText()));
+        if (cell != null) {
+            cellRun.charPrIDRef(
+                    rootRenderer.styleRenderer().renderCharStyleAndReturnCharPrId(cell.getText())
+            );
+        }
     }
 
     public void render(){
         setTc();
 
-        if (!cell.isCovered()) {
-            paraSeq = 0;
-            setSubList();
+        if (cell == null || !cell.isCovered()) {
+            SubList sl = cellSubListDef();
+            Para p = cellParaDef(sl);
+            setRun(p);
         }
 
         setCellAddr();
