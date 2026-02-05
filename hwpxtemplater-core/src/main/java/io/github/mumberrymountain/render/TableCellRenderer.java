@@ -1,6 +1,7 @@
 package io.github.mumberrymountain.render;
 
 import io.github.mumberrymountain.model.table.*;
+import io.github.mumberrymountain.util.HWPXUnitUtil;
 import kr.dogfoot.hwpxlib.object.content.section_xml.SubList;
 import kr.dogfoot.hwpxlib.object.content.section_xml.enumtype.LineWrapMethod;
 import kr.dogfoot.hwpxlib.object.content.section_xml.enumtype.TextDirection;
@@ -9,8 +10,6 @@ import kr.dogfoot.hwpxlib.object.content.section_xml.paragraph.Para;
 import kr.dogfoot.hwpxlib.object.content.section_xml.paragraph.Run;
 import kr.dogfoot.hwpxlib.object.content.section_xml.paragraph.T;
 import kr.dogfoot.hwpxlib.object.content.section_xml.paragraph.object.table.Tc;
-import io.github.mumberrymountain.model.table.*;
-import io.github.mumberrymountain.util.HWPXUnitUtil;
 
 public class TableCellRenderer {
 
@@ -22,6 +21,9 @@ public class TableCellRenderer {
     private final Cell cell;
     private final Col col;
     private final Row row;
+
+    private int paraSeq = 0;
+    
     public TableCellRenderer(HWPXRenderer rootRenderer, Tc renderingCell, int rowIdx, int colIdx, Table tableParam) {
         this.rootRenderer = rootRenderer;
         this.renderingCell = renderingCell;
@@ -74,8 +76,17 @@ public class TableCellRenderer {
     */
     private void setCellSpan() {
         renderingCell.createCellSpan();
-        renderingCell.cellSpan().colSpan((short) 1);
-        renderingCell.cellSpan().rowSpan((short) 1);
+        
+        int cs = cell.getColSpan();
+        int rs = cell.getRowSpan();
+
+        if (cell.isCovered()) {
+            renderingCell.cellSpan().colSpan((short) 0);
+            renderingCell.cellSpan().rowSpan((short) 0);
+            return;
+        }
+        renderingCell.cellSpan().colSpan((short) Math.max(cs, 1));
+        renderingCell.cellSpan().rowSpan((short) Math.max(rs, 1));
     }
 
     /*
@@ -83,10 +94,33 @@ public class TableCellRenderer {
          - width: 셀의 너비. 단위는 HWPUNIT.
          - height: 셀의 높이. 단위는 HWPUNIT.
     */
-    private void setCellSz(){
+    private void setCellSz() {
         renderingCell.createCellSz();
-        renderingCell.cellSz().width((long) HWPXUnitUtil.pxToHwpxUnit(col.getWidth()));
-        renderingCell.cellSz().height((long) HWPXUnitUtil.pxToHwpxUnit(row.getHeight()));
+
+        // covered 셀은 0으로 두는 게 안전
+        if (cell.isCovered()) {
+            renderingCell.cellSz().width(0L);
+            renderingCell.cellSz().height(0L);
+            return;
+        }
+
+        int cs = Math.max(cell.getColSpan(), 1);
+        int rs = Math.max(cell.getRowSpan(), 1);
+
+        int widthPx = 0;
+        for (int c = colIdx; c < colIdx + cs; c++) {
+            Col cObj = tableParam.getCol(c);
+            if (cObj != null) widthPx += cObj.getWidth();
+        }
+
+        int heightPx = 0;
+        for (int r = rowIdx; r < rowIdx + rs; r++) {
+            Row rObj = tableParam.getRow(r);
+            if (rObj != null) heightPx += rObj.getHeight();
+        }
+
+        renderingCell.cellSz().width((long) HWPXUnitUtil.pxToHwpxUnit((int) widthPx));
+        renderingCell.cellSz().height((long) HWPXUnitUtil.pxToHwpxUnit((int) heightPx));
     }
 
     /*
@@ -96,12 +130,21 @@ public class TableCellRenderer {
          - top: 위쪽 여백. 단위는 HWPUNIT.
          - bottom: 아래쪽 여백. 단위는 HWPUNIT.
     */
-    private void setCellMargin(){
+    private void setCellMargin() {
         renderingCell.createCellMargin();
-        renderingCell.cellMargin().left((long) 510);
-        renderingCell.cellMargin().right((long) 510);
-        renderingCell.cellMargin().top((long) 141);
-        renderingCell.cellMargin().bottom((long) 141);
+
+        if (cell.isCovered()) {
+            renderingCell.cellMargin().left(0L);
+            renderingCell.cellMargin().right(0L);
+            renderingCell.cellMargin().top(0L);
+            renderingCell.cellMargin().bottom(0L);
+            return;
+        }
+
+        renderingCell.cellMargin().left(510L);
+        renderingCell.cellMargin().right(510L);
+        renderingCell.cellMargin().top(141L);
+        renderingCell.cellMargin().bottom(141L);
     }
 
     private SubList cellSubListDef(){
@@ -130,10 +173,15 @@ public class TableCellRenderer {
         return Align.Left;
     }
 
-    private Para cellParaDef(SubList sl){
+    private Para cellParaDef(SubList sl) {
         Para cellPara = sl.addNewPara();
-        cellPara.id("0");
-        cellPara.paraPrIDRef(rootRenderer.styleRenderer().renderParaStyleAndReturnParaPrId(alignCheck(cell, col)));
+
+        // Para id 중복 방지
+        cellPara.id(String.valueOf(paraSeq++));  // "0", "1", "2"...
+
+        cellPara.paraPrIDRef(
+                rootRenderer.styleRenderer().renderParaStyleAndReturnParaPrId(alignCheck(cell, col))
+        );
         cellPara.styleIDRef("0");
         cellPara.pageBreak(false);
         cellPara.columnBreak(false);
@@ -158,7 +206,12 @@ public class TableCellRenderer {
 
     public void render(){
         setTc();
-        setSubList();
+
+        if (!cell.isCovered()) {
+            paraSeq = 0;
+            setSubList();
+        }
+
         setCellAddr();
         setCellSpan();
         setCellSz();
