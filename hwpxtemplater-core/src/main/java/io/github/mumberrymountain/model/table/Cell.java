@@ -9,6 +9,10 @@ public class Cell {
     private String borderColor = "#000000";
     private Align align;
 
+    private int rowSpan = 1;
+    private int colSpan = 1;
+    private boolean covered = false;
+
     public Cell(String value) {
         text = new Text(value);
     }
@@ -42,6 +46,27 @@ public class Cell {
         return this;
     }
 
+    // merge setters
+    public Cell rowSpan(int rowSpan) {
+        this.rowSpan = rowSpan;
+        return this;
+    }
+
+    public Cell colSpan(int colSpan) {
+        this.colSpan = colSpan;
+        return this;
+    }
+
+    public Cell covered(boolean covered) {
+        this.covered = covered;
+        return this;
+    }
+
+    // merge getters
+    public int getRowSpan() { return rowSpan; }
+    public int getColSpan() { return colSpan; }
+    public boolean isCovered() { return covered; }
+    
     public String getBackgroundColor() {
         return backgroundColor;
     }
