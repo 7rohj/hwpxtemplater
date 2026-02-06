@@ -120,7 +120,7 @@ public class TableRenderer {
         renderingTable.createPos();
         renderingTable.pos().treatAsCharAnd(false).affectLSpacingAnd(false).flowWithTextAnd(true).allowOverlapAnd(false).holdAnchorAndSOAnd(false)
                             .vertRelToAnd(VertRelTo.PARA).horzRelToAnd(HorzRelTo.COLUMN).vertAlignAnd(VertAlign.TOP).horzAlignAnd(HorzAlign.LEFT)
-                            .vertOffsetAnd((long) 0).horzOffsetAnd((long) 0);
+                            .vertOffsetAnd(0L).horzOffsetAnd(0L);
     }
 
     /*
