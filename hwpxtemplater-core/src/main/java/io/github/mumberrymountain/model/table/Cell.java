@@ -94,4 +94,23 @@ public class Cell {
     public Align getAlign(){
         return align;
     }
+
+    public int getRowSpan() { return rowSpan; }
+    public int getColSpan() { return colSpan; }
+    public boolean isCovered() { return covered; }
+
+    public Cell rowSpan(int rowSpan) {
+        this.rowSpan = rowSpan;
+        return this;
+    }
+
+    public Cell colSpan(int colSpan) {
+        this.colSpan = colSpan;
+        return this;
+    }
+
+    public Cell covered(boolean covered) {
+        this.covered = covered;
+        return this;
+    }
 }
