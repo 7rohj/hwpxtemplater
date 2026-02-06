@@ -78,14 +78,14 @@ public class TableCellRenderer {
     private void setCellSpan() {
         renderingCell.createCellSpan();
 
-        if (cell != null && cell.isCovered()) {
+        if (isCovered(cell)) {
             renderingCell.cellSpan().colSpan((short) 0);
             renderingCell.cellSpan().rowSpan((short) 0);
             return;
         }
 
-        int cs = (cell == null) ? 1 : Math.max(cell.getColSpan(), 1);
-        int rs = (cell == null) ? 1 : Math.max(cell.getRowSpan(), 1);
+        int cs = Math.max(reflectInt(cell, "getColSpan", 1), 1);
+        int rs = Math.max(reflectInt(cell, "getRowSpan", 1), 1);
 
         renderingCell.cellSpan().colSpan((short) cs);
         renderingCell.cellSpan().rowSpan((short) rs);
@@ -106,8 +106,8 @@ public class TableCellRenderer {
             return;
         }
 
-        int cs = (cell == null) ? 1 : Math.max(cell.getColSpan(),1);
-        int rs = (cell == null) ? 1 : Math.max(cell.getRowSpan(),1);
+        int cs = Math.max(reflectInt(cell, "getColSpan", 1), 1);
+        int rs = Math.max(reflectInt(cell, "getRowSpan", 1), 1);
 
         int widthPx = 0;
         for (int c = colIdx; c < colIdx + cs; c++) {
@@ -121,6 +121,11 @@ public class TableCellRenderer {
             if (rObj != null) heightPx += rObj.getHeight();
         }
 
+        int heightPx = 0;
+        for (int r = rowIdx; r < rowIdx + rs; r++) {
+            Row rObj = tableParam.getRow(r);
+            if (rObj != null) heightPx += rObj.getHeight();
+        }
         renderingCell.cellSz().width((long) HWPXUnitUtil.pxToHwpxUnit(widthPx);
         renderingCell.cellSz().height((long) HWPXUnitUtil.pxToHwpxUnit(heightPx);
     }
@@ -135,7 +140,7 @@ public class TableCellRenderer {
     private void setCellMargin() {
         renderingCell.createCellMargin();
 
-        if (cell.isCovered()) {
+        if (isCovered(cell)) {
             renderingCell.cellMargin().left(0L);
             renderingCell.cellMargin().right(0L);
             renderingCell.cellMargin().top(0L);
@@ -163,6 +168,10 @@ public class TableCellRenderer {
         sl.hasTextRef(false);
         sl.hasNumRef(false);
         return sl;
+    }
+
+    private void setSubList(){
+        setParagraph(cellSubListDef());
     }
 
     private Align alignCheck(Cell cell, Col col) {
@@ -199,18 +208,52 @@ public class TableCellRenderer {
         }
     }
 
+    private void setParagraph(SubList sl){
+        setRun(cellParaDef(sl));
+    }
+
+    private void setRun(Para cellPara) {
+        Run cellRun = cellPara.addNewRun();
+        T cellT = cellRun.addNewT();
+
+        String val = (cell == null) ? "" : cell.getText().getValue();
+        if (RendererUtil.isAutoTrim(rootRenderer.config())) val = val.trim();
+
+        cellT.addText(val);
+        if (cell != null) {
+            cellRun.charPrIDRef(rootRenderer.styleRenderer().renderCharStyleAndReturnCharPrId(cell.getText()));
+        }
+    }
+
     public void render(){
         setTc();
 
-        if (cell == null || !cell.isCovered()) {
-            SubList sl = cellSubListDef();
-            Para p = cellParaDef(sl);
-            setRun(p);
+        if (!isCovered(cell)) {
+            setSubList();
         }
 
         setCellAddr();
         setCellSpan();
         setCellSz();
         setCellMargin();
+    }
+
+    private boolean isCovered(Object cellObj) {
+        if (cellObj == null) return false;
+        try {
+            java.lang.reflect.Method m = cellObj.getClass().getMethod("isCovered");
+            Object r = m.invoke(cellObj);
+            return (r instanceof Boolean) && (Boolean) r;
+        } catch (Exception ignored) {}
+        return false;
+    }
+
+    private int reflectInt(Object target, String method, int fallback) {
+        try {
+            java.lang.reflect.Method m = target.getClass().getMethod(method);
+            Object r = m.invoke(target);
+            if (r instanceof Number) return ((Number) r).intValue();
+        } catch (Exception ignored) {}
+        return fallback;
     }
 }
