@@ -154,13 +154,73 @@ public class BorderRenderer {
     }
 
     private LineType2 parseLineType(Map<String, Object> spec) {
+        // default
         if (spec == null) return LineType2.SOLID;
+
         Object s = spec.get("style");
         if (s == null) return LineType2.SOLID;
 
-        String v = String.valueOf(s).trim().toLowerCase();
-        if ("none".equals(v) || "hidden".equals(v)) return LineType2.NONE;
-        return LineType2.SOLID;
+        String v = String.valueOf(s).trim();
+        if (v.isEmpty()) return LineType2.SOLID;
+
+        String key = v.toLowerCase()
+                .replace('-', '_')
+                .replace(' ', '_');
+
+        if ("hidden".equals(key)) return LineType2.NONE;
+
+        switch (key) {
+            case "none": return LineType2.NONE;
+            case "solid": return LineType2.SOLID;
+
+            case "dot": return LineType2.DOT;
+            case "dash": return LineType2.DASH;
+
+            case "dash_dot":
+            case "dashdot":
+            case "dash-dot":
+                return LineType2.DASH_DOT;
+
+            case "dash_dot_dot":
+            case "dashdotdot":
+            case "dash-dot-dot":
+                return LineType2.DASH_DOT_DOT;
+
+            case "long_dash":
+            case "longdash":
+            case "long-dash":
+                return LineType2.LONG_DASH;
+
+            case "circle":
+            case "circledot":
+            case "circle_dot":
+            case "circle-dot":
+                return LineType2.CIRCLE;
+
+            case "double_slim":
+            case "double":
+            case "double-slim":
+                return LineType2.DOUBLE_SLIM;
+
+            case "slim_thick":
+            case "thinbold":
+            case "slim-thick":
+                return LineType2.SLIM_THICK;
+
+            case "thick_slim":
+            case "boldthin":
+            case "thick-slim":
+                return LineType2.THICK_SLIM;
+
+            case "slim_thick_slim":
+            case "thinboldthin":
+            case "slim-thick-slim":
+                return LineType2.SLIM_THICK_SLIM;
+
+            default:
+                LineType2 byEnum = LineType2.fromString(key);
+                return (byEnum != null) ? byEnum : LineType2.SOLID;
+        }
     }
 
     /** - LineWidth enum에 없는 값이면 "오류 안내" (예외로 터뜨림) */
