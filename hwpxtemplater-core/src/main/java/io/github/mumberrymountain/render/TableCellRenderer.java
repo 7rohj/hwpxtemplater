@@ -11,6 +11,8 @@ import kr.dogfoot.hwpxlib.object.content.section_xml.paragraph.Run;
 import kr.dogfoot.hwpxlib.object.content.section_xml.paragraph.T;
 import kr.dogfoot.hwpxlib.object.content.section_xml.paragraph.object.table.Tc;
 
+import java.util.Map;
+
 public class TableCellRenderer {
 
     private final HWPXRenderer rootRenderer;
@@ -55,8 +57,19 @@ public class TableCellRenderer {
         renderingCell.dirty(false);
 
         renderingCell.borderFillIDRef(
-            rootRenderer.styleRenderer().renderBorderStyle(cell, tableParam, rowIdx, colIdx)
+            rootRenderer.styleRenderer().renderBorderStyle(cell, tableParam, rowIdx, colIdx, resolveBackgroundColor())
         );
+    }
+
+    private String resolveBackgroundColor() {
+        Map<String, Object> cellStyle = getCellStyleMapForCurrentRow();
+        if (cellStyle == null) return null;
+
+        Object bg = cellStyle.get("backgroundColor");
+        if (bg == null) return null;
+
+        String s = String.valueOf(bg).trim();
+        return s.isEmpty() ? null : s;
     }
 
     /*
@@ -148,10 +161,18 @@ public class TableCellRenderer {
             return;
         }
 
-        renderingCell.cellMargin().left(510L);
-        renderingCell.cellMargin().right(510L);
-        renderingCell.cellMargin().top(141L);
-        renderingCell.cellMargin().bottom(141L);
+        Map<String, Object> padding = getPaddingMapFromCellStyle();
+
+        // 기본값(mm) - 필요하면 조정
+        long left   = asHwpxFromMmOrDefault(padding, "left",   1.8);
+        long right  = asHwpxFromMmOrDefault(padding, "right",  1.8);
+        long top    = asHwpxFromMmOrDefault(padding, "top",    0.5);
+        long bottom = asHwpxFromMmOrDefault(padding, "bottom", 0.5);
+
+        renderingCell.cellMargin().left(left);
+        renderingCell.cellMargin().right(right);
+        renderingCell.cellMargin().top(top);
+        renderingCell.cellMargin().bottom(bottom);
     }
 
     private SubList cellSubListDef(){
@@ -160,7 +181,9 @@ public class TableCellRenderer {
         sl.id("");
         sl.textDirection(TextDirection.HORIZONTAL);
         sl.lineWrap(LineWrapMethod.BREAK);
-        sl.vertAlign(VerticalAlign2.CENTER);
+
+        sl.vertAlign(resolveVerticalAlignFromStyle());
+        
         sl.linkListIDRef("0");
         sl.linkListNextIDRef("0");
         sl.textWidth(0);
@@ -174,7 +197,28 @@ public class TableCellRenderer {
         setParagraph(cellSubListDef());
     }
 
-    private Align alignCheck(Cell cell, Col col) {
+    private Align resolveHorizontalAlign(Cell cell, Col col) {
+        Map<String, Object> ta = getTextAlignMapFromCellStyle();
+        if (ta != null) {
+            Object hObj = ta.get("horizontal");
+            if (hObj != null) {
+                String h = String.valueOf(hObj).trim().toLowerCase();
+                switch (h) {
+                    case "left":
+                        return Align.Left;
+                    case "center":
+                    case "centre":
+                    case "middle":
+                        return Align.Center;
+                    case "right":
+                        return Align.Right;
+                    default:
+                        break;
+                }
+            }
+        }
+
+        // fallback: 기존 로직
         if (cell != null && cell.getAlign() != null) return cell.getAlign();
         if (col != null && col.getAlign() != null) return col.getAlign();
         return Align.Left;
@@ -184,7 +228,8 @@ public class TableCellRenderer {
         Para cellPara = sl.addNewPara();
         cellPara.id("0");
         cellPara.paraPrIDRef(
-                rootRenderer.styleRenderer().renderParaStyleAndReturnParaPrId(alignCheck(cell, col))
+                rootRenderer.styleRenderer()
+                        .renderParaStyleAndReturnParaPrId(resolveHorizontalAlign(cell, col))
         );
         cellPara.styleIDRef("0");
         cellPara.pageBreak(false);
@@ -193,22 +238,7 @@ public class TableCellRenderer {
         return cellPara;
     }
 
-    private void setRun(Para cellPara) {
-        Run cellRun = cellPara.addNewRun();
-        T cellT = cellRun.addNewT();
-
-        String val = (cell == null) ? "" : cell.getText().getValue();
-        if (RendererUtil.isAutoTrim(rootRenderer.config())) val = val.trim();
-
-        cellT.addText(val);
-        if (cell != null) {
-            cellRun.charPrIDRef(
-                    rootRenderer.styleRenderer().renderCharStyleAndReturnCharPrId(cell.getText())
-            );
-        }
-    }
-
-    private void setParagraph(SubList sl){
+    private void setParagraph(SubList sl) {
         setRun(cellParaDef(sl));
     }
 
@@ -238,13 +268,93 @@ public class TableCellRenderer {
         setCellMargin();
     }
 
+    @SuppressWarnings("unchecked")
+    private Map<String, Object> getStyleMap() {
+        if (tableParam == null) return null;
+        Object styleObj = tableParam.getConfig("style");
+        if (styleObj instanceof Map) return (Map<String, Object>) styleObj;
+        return null;
+    }
+
+    @SuppressWarnings("unchecked")
+    private Map<String, Object> getCellStyleMapForCurrentRow() {
+        Map<String, Object> style = getStyleMap();
+        if (style == null) return null;
+
+        boolean isHeader = (row != null && row.getRowType() == RowType.Header);
+        Object obj = isHeader ? style.get("headerCell") : style.get("bodyCell");
+        if (obj instanceof Map) return (Map<String, Object>) obj;
+
+        // 하위호환: style.cell
+        Object legacy = style.get("cell");
+        if (legacy instanceof Map) return (Map<String, Object>) legacy;
+
+        return null;
+    }
+
+    @SuppressWarnings("unchecked")
+    private Map<String, Object> getPaddingMapFromCellStyle() {
+        Map<String, Object> cellStyle = getCellStyleMapForCurrentRow();
+        if (cellStyle == null) return null;
+
+        Object paddingObj = cellStyle.get("padding");
+        if (!(paddingObj instanceof Map)) return null;
+
+        return (Map<String, Object>) paddingObj;
+    }
+
+    @SuppressWarnings("unchecked")
+    private Map<String, Object> getTextAlignMapFromCellStyle() {
+        Map<String, Object> cellStyle = getCellStyleMapForCurrentRow();
+        if (cellStyle == null) return null;
+
+        Object taObj = cellStyle.get("textAlign");
+        if (!(taObj instanceof Map)) return null;
+
+        return (Map<String, Object>) taObj;
+    }
+
+    public static long mmToHwpxUnit(double mm) {
+        // HWPX 단위: 1/7200 inch (dogfoot hwpx에서 width/height/margin에 쓰는 단위)
+        // 1 inch = 25.4 mm
+        // => hwpxUnit = mm / 25.4 * 7200
+        return Math.round(mm * 7200.0 / 25.4);
+    }
+
+    private long asHwpxFromMmOrDefault(Map<String, Object> m, String key, double defMm) {
+        double mm = defMm;
+        if (m != null) {
+            Double parsed = tryParseDouble(m.get(key));
+            if (parsed != null) mm = parsed;
+        }
+        return Math.round(mm * 7200.0 / 25.4);
+    }
+
+    private Double tryParseDouble(Object v) {
+        if (v == null) return null;
+        if (v instanceof Number) return ((Number) v).doubleValue();
+        try {
+            String s = String.valueOf(v).trim().toLowerCase();
+            if (s.endsWith("mm")) s = s.substring(0, s.length() - 2).trim();
+            if (s.isEmpty()) return null;
+            return Double.parseDouble(s);
+        } catch (Exception ignored) {
+        }
+        return null;
+    }
+
+    // -------------------------
+    // reflection helpers
+    // -------------------------
+
     private boolean isCovered(Object cellObj) {
         if (cellObj == null) return false;
         try {
             java.lang.reflect.Method m = cellObj.getClass().getMethod("isCovered");
             Object r = m.invoke(cellObj);
             return (r instanceof Boolean) && (Boolean) r;
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
         return false;
     }
 
@@ -253,7 +363,38 @@ public class TableCellRenderer {
             java.lang.reflect.Method m = target.getClass().getMethod(method);
             Object r = m.invoke(target);
             if (r instanceof Number) return ((Number) r).intValue();
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
         return fallback;
+    }
+
+    private VerticalAlign2 resolveVerticalAlignFromStyle() {
+        // default = 가운데(기존 동작 유지)
+        Map<String, Object> ta = getTextAlignMapFromCellStyle();
+        if (ta == null) return VerticalAlign2.CENTER;
+
+        Object vObj = ta.get("vertical");
+        if (vObj == null) return VerticalAlign2.CENTER;
+
+        String v = String.valueOf(vObj).trim().toLowerCase();
+        if (v.isEmpty()) return VerticalAlign2.CENTER;
+
+        switch (v) {
+            case "top":
+            case "upper":
+                return VerticalAlign2.TOP;
+
+            case "middle":
+            case "center":
+            case "centre":
+                return VerticalAlign2.CENTER;
+
+            case "bottom":
+            case "lower":
+                return VerticalAlign2.BOTTOM;
+
+            default:
+                return VerticalAlign2.CENTER;
+        }
     }
 }
