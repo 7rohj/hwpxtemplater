@@ -7,6 +7,7 @@ import kr.dogfoot.hwpxlib.object.content.header_xml.references.ParaPr;
 import io.github.mumberrymountain.model.Text;
 import io.github.mumberrymountain.model.table.Align;
 import io.github.mumberrymountain.model.table.Cell;
+import io.github.mumberrymountain.model.table.Table;
 import io.github.mumberrymountain.render.RendererUtil;
 
 import java.util.HashMap;
@@ -46,7 +47,7 @@ public class StyleRenderer {
         return borderFill.id();
     }
 
-    public String renderBorderStyle(Cell cell, Table table, int rowIdx, int colIdx) {
+    public String renderBorderStyle(Cell cell, Table table, int rowIdx, int colIdx, String bgColor) {
         if (cell == null || table == null) return renderBorderStyle(cell);
 
         Map<String, Object> styleMap = safeMap(table.getConfig("style"));
@@ -89,7 +90,8 @@ public class StyleRenderer {
                 "|L=" + borderSpecKey(leftSpec) +
                 "|R=" + borderSpecKey(rightSpec) +
                 "|T=" + borderSpecKey(topSpec) +
-                "|B=" + borderSpecKey(bottomSpec);
+                "|B=" + borderSpecKey(bottomSpec) +
+                "|BG=" + String.valueOf(normalizeHex(bgColor));
 
         if (borderFillIds.containsKey(key)) return borderFillIds.get(key).id();
 
@@ -98,6 +100,8 @@ public class StyleRenderer {
                 cell,
                 leftSpec, rightSpec, topSpec, bottomSpec
         ).render();
+
+        applyBackgroundColor(borderFill, bgColor);
 
         borderFillIds.put(key, borderFill);
         return borderFill.id();
@@ -137,5 +141,57 @@ public class StyleRenderer {
             if (r instanceof Number) return ((Number) r).intValue();
         } catch (Exception ignored) {}
         return fallback;
+    }
+
+    private void applyBackgroundColor(BorderFill borderFill, String bgColor) {
+        String rgb = normalizeHex(bgColor);
+        if (rgb == null) return;
+
+        if (borderFill.fillBrush() == null) borderFill.createFillBrush();
+        if (borderFill.fillBrush().winBrush() == null) borderFill.fillBrush().createWinBrush();
+
+        // RGB -> BGR
+        String bgr6 = rgbToBgr(rgb);
+
+        String bgr8 = "00" + bgr6;
+
+        borderFill.fillBrush().winBrush().faceColor(bgr8);
+        borderFill.fillBrush().winBrush().hatchColor(bgr8);
+    }
+
+    // "#eeeeee" / "eeeeee" / null -> "EEEEEE" (6자리) or null
+    private String normalizeHex(String hex) {
+        if (hex == null) return null;
+        String s = hex.trim();
+        if (s.isEmpty()) return null;
+
+        if (s.startsWith("#")) s = s.substring(1);
+        s = s.trim();
+
+        if (s.length() == 3) {
+            char r = s.charAt(0), g = s.charAt(1), b = s.charAt(2);
+            s = "" + r + r + g + g + b + b;
+        }
+
+        if (s.length() != 6) return null;
+
+        // hex 체크
+        for (int i = 0; i < 6; i++) {
+            char ch = s.charAt(i);
+            boolean ok = (ch >= '0' && ch <= '9')
+                    || (ch >= 'a' && ch <= 'f')
+                    || (ch >= 'A' && ch <= 'F');
+            if (!ok) return null;
+        }
+
+        return s.toUpperCase();
+    }
+
+    private String rgbToBgr(String rgb6) {
+        if (rgb6 == null || rgb6.length() != 6) return rgb6;
+        String rr = rgb6.substring(0, 2);
+        String gg = rgb6.substring(2, 4);
+        String bb = rgb6.substring(4, 6);
+        return (bb + gg + rr).toUpperCase(); // BGR
     }
 }
