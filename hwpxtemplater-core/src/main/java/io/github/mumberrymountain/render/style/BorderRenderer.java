@@ -82,13 +82,6 @@ public class BorderRenderer {
         borderFill.slash().isCounter(false);
     }
 
-    private void setBorderAll(LineType2 lineType, LineWidth lineWidth, String color){
-        setLeftBorder(lineType, lineWidth, color);
-        setRightBorder(lineType, lineWidth, color);
-        setTopBorder(lineType, lineWidth, color);
-        setBottomBorder(lineType, lineWidth, color);
-    }
-
     private void setBackSlash(){
         borderFill.createBackSlash();
         borderFill.backSlash().Crooked(false);
@@ -96,6 +89,7 @@ public class BorderRenderer {
         borderFill.backSlash().isCounter(false);
     }
 
+    /*
     private void setFillBrush(String faceColor, String hatchColor){
         borderFill.createFillBrush();
 
@@ -103,28 +97,30 @@ public class BorderRenderer {
         fillBrush.createWinBrush();
         fillBrush.winBrush().faceColor(faceColor); // 배경색상
         fillBrush.winBrush().hatchColor(hatchColor);
-        fillBrush.winBrush().alpha((float) 0);
     }
-
+    */
+    
     public BorderFill render(){
         setId();
 
         if (leftSpec == null && rightSpec == null && topSpec == null && bottomSpec == null) {
-            if (cell.isBorder()) {
-                setLeftBorder(LineType2.SOLID, LineWidth.MM_0_1, cell.getBorderColor());
-                setRightBorder(LineType2.SOLID, LineWidth.MM_0_1, cell.getBorderColor());
-                setTopBorder(LineType2.SOLID, LineWidth.MM_0_1, cell.getBorderColor());
-                setBottomBorder(LineType2.SOLID, LineWidth.MM_0_1, cell.getBorderColor());
+            if (cell != null && cell.isBorder()) {
+                String c = normalizeHex6OrHash(cell.getBorderColor());
+                setLeftBorder(LineType2.SOLID, LineWidth.MM_0_1, c);
+                setRightBorder(LineType2.SOLID, LineWidth.MM_0_1, c);
+                setTopBorder(LineType2.SOLID, LineWidth.MM_0_1, c);
+                setBottomBorder(LineType2.SOLID, LineWidth.MM_0_1, c);
             } else {
-                setLeftBorder(LineType2.NONE, LineWidth.MM_0_12, cell.getBorderColor());
-                setRightBorder(LineType2.NONE, LineWidth.MM_0_12, cell.getBorderColor());
-                setTopBorder(LineType2.NONE, LineWidth.MM_0_12, cell.getBorderColor());
-                setBottomBorder(LineType2.NONE, LineWidth.MM_0_12, cell.getBorderColor());
+                String c = normalizeHex6OrHash(cell != null ? cell.getBorderColor() : "#000000");
+                setLeftBorder(LineType2.NONE, LineWidth.MM_0_12, c);
+                setRightBorder(LineType2.NONE, LineWidth.MM_0_12, c);
+                setTopBorder(LineType2.NONE, LineWidth.MM_0_12, c);
+                setBottomBorder(LineType2.NONE, LineWidth.MM_0_12, c);
                 setSlash();
                 setBackSlash();
             }
 
-            setFillBrush(cell.getBackgroundColor(), "#000000");
+            // ✅ 여기서 반드시 add (이거 빠지면 기존 호환이 씹힘)
             headerXMLFile.refList().borderFills().add(borderFill);
             return borderFill;
         }
@@ -136,7 +132,6 @@ public class BorderRenderer {
 
         setSlash();
         setBackSlash();
-        setFillBrush(cell.getBackgroundColor(), "#000000");
 
         headerXMLFile.refList().borderFills().add(borderFill);
         return borderFill;
@@ -284,9 +279,55 @@ public class BorderRenderer {
     }
 
     private String parseColor(Map<String, Object> spec) {
-        if (spec == null) return (cell != null ? cell.getBorderColor() : "#000000");
-        Object c = spec.get("color");
-        if (c == null) return (cell != null ? cell.getBorderColor() : "#000000");
-        return String.valueOf(c).trim();
+        String raw;
+        if (spec != null && spec.get("color") != null) raw = String.valueOf(spec.get("color")).trim();
+        else if (cell != null && cell.getBorderColor() != null) raw = String.valueOf(cell.getBorderColor()).trim();
+        else raw = "#000000";
+
+        return normalizeHex6OrHash(raw);
     }
+
+    // "#000000" / "000000" / "abc" -> "000000" / "AABBCC" (6자리, 대문자)
+    // 잘못된 값이면 기본값 "000000"으로 방어
+    private String normalizeHex6OrHash(String hex) {
+        String s = (hex == null) ? "" : hex.trim();
+        if (s.isEmpty()) return "#000000";
+        if (s.startsWith("#")) s = s.substring(1).trim();
+
+        if (s.length() == 3) {
+            s = "" + s.charAt(0)+s.charAt(0) + s.charAt(1)+s.charAt(1) + s.charAt(2)+s.charAt(2);
+        }
+        if (s.length() != 6) return "#000000";
+
+        for (int i = 0; i < 6; i++) {
+            char ch = s.charAt(i);
+            boolean ok = (ch >= '0' && ch <= '9')
+                    || (ch >= 'a' && ch <= 'f')
+                    || (ch >= 'A' && ch <= 'F');
+            if (!ok) return "#000000";
+        }
+        return "#" + s.toUpperCase();
+    }
+
+    private String normalizeHex6(String hex) {
+        if (hex == null) return "000000";
+        String s = hex.trim();
+        if (s.isEmpty()) return "000000";
+        if (s.startsWith("#")) s = s.substring(1).trim();
+
+        if (s.length() == 3) {
+            s = "" + s.charAt(0)+s.charAt(0) + s.charAt(1)+s.charAt(1) + s.charAt(2)+s.charAt(2);
+        }
+        if (s.length() != 6) return "000000";
+
+        for (int i = 0; i < 6; i++) {
+            char ch = s.charAt(i);
+            boolean ok = (ch >= '0' && ch <= '9')
+                    || (ch >= 'a' && ch <= 'f')
+                    || (ch >= 'A' && ch <= 'F');
+            if (!ok) return "000000";
+        }
+        return s.toUpperCase();
+    }
+    
 }
