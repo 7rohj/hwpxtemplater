@@ -15,6 +15,10 @@ public class Text {
     private boolean emboss = false;
     private boolean engrave = false;
 
+    private String align = "left";     // left|center|right|justify
+    private String script = "normal";  // normal|sup|sub
+    private String multiline = "auto"; // auto|preserve|none
+
     public Text(String value) {
         this.value = value;
     }
@@ -79,6 +83,21 @@ public class Text {
         return this;
     }
 
+    public Text align(String align){
+        this.align = align;
+        return this;
+    }
+
+    public Text script(String script){
+        this.script = script;
+        return this;
+    }
+
+    public Text multiline(String multiline){
+        this.multiline = multiline;
+        return this;
+    }
+
     public String getBackgroundColor() {
         return backgroundColor;
     }
@@ -125,6 +144,18 @@ public class Text {
 
     public boolean isEngrave(){
         return engrave;
+    }
+
+    public String getAlign(){
+        return align;
+    }
+
+    public String getScript(){
+        return script;
+    }
+
+    public String getMultiline(){
+        return multiline;
     }
 
     public String getValue() { return value; }
