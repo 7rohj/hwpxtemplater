@@ -65,8 +65,28 @@ public class TextObjectReplacementRenderer implements ValueReplacementRenderer {
     public void renderReplacement() {
         placeHolder.t().clear();
         placeHolder.t().addText(value.getValue());
-        linkedRunItem.parent().data().charPrIDRef(rootRenderer.styleRenderer().renderCharStyleAndReturnCharPrId(value));
+        linkedRunItem.parent().data().charPrIDRef(
+            rootRenderer.styleRenderer().renderCharStyleAndReturnCharPrId(value)
+        );
 
-        if (RendererUtil.isCurrentRangeProcessing(rangeStack.current())) rangeStack.add(linkedRunItem.parent(), placeHolder);
+        String al = value.getAlign();
+        if (al != null && !al.isBlank()) {
+            io.github.mumberrymountain.model.table.Align a = io.github.mumberrymountain.model.table.Align.Left;
+            switch (al.trim().toLowerCase()) {
+                case "center": a = io.github.mumberrymountain.model.table.Align.Center; break;
+                case "right":  a = io.github.mumberrymountain.model.table.Align.Right;  break;
+                default:       a = io.github.mumberrymountain.model.table.Align.Left;   break;
+            }
+
+            kr.dogfoot.hwpxlib.object.content.section_xml.paragraph.Para para =
+                (kr.dogfoot.hwpxlib.object.content.section_xml.paragraph.Para)
+                    linkedRunItem.parent().parent().data();
+
+            para.paraPrIDRef(rootRenderer.styleRenderer().renderParaStyleAndReturnParaPrId(a));
+        }
+
+        if (RendererUtil.isCurrentRangeProcessing(rangeStack.current())) {
+            rangeStack.add(linkedRunItem.parent(), placeHolder);
+        }
     }
 }
