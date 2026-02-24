@@ -98,13 +98,25 @@ public class CharPrRenderer {
 
     private void setOffset(){
         charPr.createOffset();
-        charPr.offset().hangul((short) 0);
-        charPr.offset().latin((short) 0);
-        charPr.offset().hanja((short) 0);
-        charPr.offset().japanese((short) 0);
-        charPr.offset().other((short) 0);
-        charPr.offset().symbol((short) 0);
-        charPr.offset().user((short) 0);
+
+        short offset = 0;
+
+        if (script != null) {
+            String s = script.trim().toLowerCase();
+            if (s.equals("superscript") || s.equals("super") || s.equals("up")) {
+                offset = 30;    // 위로
+            } else if (s.equals("subscript") || s.equals("sub") || s.equals("down")) {
+                offset = -30;   // 아래로
+            }
+        }
+
+        charPr.offset().hangul(offset);
+        charPr.offset().latin(offset);
+        charPr.offset().hanja(offset);
+        charPr.offset().japanese(offset);
+        charPr.offset().other(offset);
+        charPr.offset().symbol(offset);
+        charPr.offset().user(offset);
     }
 
     private void setBold(){
