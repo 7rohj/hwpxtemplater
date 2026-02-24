@@ -4,6 +4,8 @@ import kr.dogfoot.hwpxlib.object.content.header_xml.HeaderXMLFile;
 import kr.dogfoot.hwpxlib.object.content.header_xml.references.BorderFill;
 import kr.dogfoot.hwpxlib.object.content.header_xml.references.CharPr;
 import kr.dogfoot.hwpxlib.object.content.header_xml.references.ParaPr;
+import kr.dogfoot.hwpxlib.object.content.header_xml.enumtype.HorizontalAlign2; //추가
+import kr.dogfoot.hwpxlib.object.content.header_xml.enumtype.VerticalAlign1; // 추가
 import io.github.mumberrymountain.model.Text;
 import io.github.mumberrymountain.model.table.Align;
 import io.github.mumberrymountain.model.table.Cell;
@@ -194,4 +196,55 @@ public class StyleRenderer {
         String bb = rgb6.substring(4, 6);
         return (bb + gg + rr).toUpperCase(); // BGR
     }
+
+    public String renderParaStyleFromBaseAndReturnParaPrId(String baseParaPrId, Align align) {
+        if (align == null) align = Align.Left;
+
+        // base가 없으면 기존 방식 fallback
+        if (baseParaPrId == null || baseParaPrId.isBlank()) {
+            return renderParaStyleAndReturnParaPrId(align);
+        }
+
+        String key = "BASE=" + baseParaPrId + "|ALIGN=" + align.name();
+        if (paraPrs.containsKey(key)) return paraPrs.get(key).id();
+
+        // 1) base ParaPr 찾기
+        ParaPr base = null;
+        for (ParaPr p : headerXMLFile.refList().paraProperties().items()) {
+            if (baseParaPrId.equals(p.id())) {
+                base = p;
+                break;
+            }
+        }
+        if (base == null) {
+            return renderParaStyleAndReturnParaPrId(align);
+        }
+
+        // 2) clone
+        ParaPr cloned = base.clone();
+
+        // 3) 새 id 부여 (중복 방지: 현재 개수 기반)
+        String newId = Integer.toString(headerXMLFile.refList().paraProperties().count());
+        cloned.id(newId);
+
+        // 4) align만 변경 (나머지: 줄간격/여백 등은 base 그대로 유지)
+        HorizontalAlign2 ha = HorizontalAlign2.LEFT;
+        switch (align) {
+            case Center: ha = HorizontalAlign2.CENTER; break;
+            case Right:  ha = HorizontalAlign2.RIGHT;  break;
+            case Left:
+            default:     ha = HorizontalAlign2.LEFT;   break;
+        }
+
+        cloned.createAlign();
+        cloned.align().horizontal(ha);
+        cloned.align().vertical(VerticalAlign1.BASELINE);
+
+        // 5) 등록 + 캐시
+        headerXMLFile.refList().paraProperties().add(cloned);
+        paraPrs.put(key, cloned);
+
+        return cloned.id();
+    }
+    
 }
