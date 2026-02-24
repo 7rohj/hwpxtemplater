@@ -63,27 +63,44 @@ public class TextObjectReplacementRenderer implements ValueReplacementRenderer {
 
     @Override
     public void renderReplacement() {
+        System.out.println("DESC_RAW=[" + value.getValue().replace("\n","\\n").replace("\r","\\r") + "]");
+
         placeHolder.t().clear();
-        placeHolder.t().addText(value.getValue());
+
+        String raw = value.getValue();
+        if (raw == null) return;
+
+        String[] parts = raw.split("\\r\\n|\\r|\\n", -1);
+        for (int i = 0; i < parts.length; i++) {
+            placeHolder.t().addText(parts[i]);
+            if (i < parts.length - 1) {
+                placeHolder.t().addNewLineBreak();
+            }
+        }
+
+        kr.dogfoot.hwpxlib.object.content.section_xml.paragraph.Para para =
+            (kr.dogfoot.hwpxlib.object.content.section_xml.paragraph.Para)
+                linkedRunItem.parent().parent().data();
+
         linkedRunItem.parent().data().charPrIDRef(
             rootRenderer.styleRenderer().renderCharStyleAndReturnCharPrId(value)
         );
 
         String al = value.getAlign();
-        if (al != null && !al.isBlank()) {
-            io.github.mumberrymountain.model.table.Align a = io.github.mumberrymountain.model.table.Align.Left;
-            switch (al.trim().toLowerCase()) {
-                case "center": a = io.github.mumberrymountain.model.table.Align.Center; break;
-                case "right":  a = io.github.mumberrymountain.model.table.Align.Right;  break;
-                default:       a = io.github.mumberrymountain.model.table.Align.Left;   break;
-            }
+        if (al != null) al = al.trim().toLowerCase();
 
-            kr.dogfoot.hwpxlib.object.content.section_xml.paragraph.Para para =
-                (kr.dogfoot.hwpxlib.object.content.section_xml.paragraph.Para)
-                    linkedRunItem.parent().parent().data();
+        if ("center".equals(al) || "right".equals(al)) {
+            io.github.mumberrymountain.model.table.Align a =
+                "center".equals(al) ? io.github.mumberrymountain.model.table.Align.Center
+                                    : io.github.mumberrymountain.model.table.Align.Right;
 
-            para.paraPrIDRef(rootRenderer.styleRenderer().renderParaStyleAndReturnParaPrId(a));
+            String baseId = para.paraPrIDRef();
+            para.paraPrIDRef(
+                rootRenderer.styleRenderer().renderParaStyleFromBaseAndReturnParaPrId(baseId, a)
+            );
         }
+
+        para.removeLineSegArray();
 
         if (RendererUtil.isCurrentRangeProcessing(rangeStack.current())) {
             rangeStack.add(linkedRunItem.parent(), placeHolder);
