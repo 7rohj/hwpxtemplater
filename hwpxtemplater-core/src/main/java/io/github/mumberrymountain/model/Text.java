@@ -15,9 +15,9 @@ public class Text {
     private boolean emboss = false;
     private boolean engrave = false;
 
-    private String align = "left";     // left|center|right|justify
-    private String script = "normal";  // normal|sup|sub
-    private String multiline = "auto"; // auto|preserve|none
+    private String align = "null";     // left|center|right|justify
+    private String script = "null";  // normal|sup|sub
+    private String multiline = "null"; // auto|preserve|none
 
     public Text(String value) {
         this.value = value;
