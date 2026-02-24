@@ -132,6 +132,17 @@ public class ParaPrRenderer {
         paraPr.border().ignoreMargin(false);
     }
 
+    private void setLineSpacing() {
+        paraPr.createLineSpacing();
+    }
+
+    private void setLineSpacingPercent(int percent) {
+        paraPr.createLineSpacing();
+        paraPr.lineSpacing().type(LineSpacingType.PERCENT);
+        paraPr.lineSpacing().value(percent);
+        paraPr.lineSpacing().unit(ValueUnit2.PERCENT);
+    }
+
     public ParaPr render() {
         setId();
         setParaPr();
@@ -140,6 +151,8 @@ public class ParaPrRenderer {
         setBreakSetting();
         setAutoSpacing();
         setMargin();
+        setLineSpacing();
+        setLineSpacingPercent(160); 
         setBorder();
 
         return paraPr;
