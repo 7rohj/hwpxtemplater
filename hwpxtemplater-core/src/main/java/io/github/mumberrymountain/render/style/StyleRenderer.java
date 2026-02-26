@@ -197,7 +197,6 @@ public class StyleRenderer {
         return (bb + gg + rr).toUpperCase(); // BGR
     }
 
-    ..
     public String renderParaStyleFromBaseAndReturnParaPrId(String baseParaPrId, Align align) {
         return renderParaStyleFromBaseAndReturnParaPrId(baseParaPrId, align, null);
     }
