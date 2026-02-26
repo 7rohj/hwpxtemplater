@@ -86,17 +86,28 @@ public class TextObjectReplacementRenderer implements ValueReplacementRenderer {
             rootRenderer.styleRenderer().renderCharStyleAndReturnCharPrId(value)
         );
 
+        io.github.mumberrymountain.model.table.Align alignEnum =
+                io.github.mumberrymountain.model.table.Align.Left;
+
         String al = value.getAlign();
         if (al != null) al = al.trim().toLowerCase();
 
-        if ("center".equals(al) || "right".equals(al)) {
-            io.github.mumberrymountain.model.table.Align a =
-                "center".equals(al) ? io.github.mumberrymountain.model.table.Align.Center
-                                    : io.github.mumberrymountain.model.table.Align.Right;
+        if ("center".equals(al)) {
+            alignEnum = io.github.mumberrymountain.model.table.Align.Center;
+        } else if ("right".equals(al)) {
+            alignEnum = io.github.mumberrymountain.model.table.Align.Right;
+        }
 
+        Integer lineSpacingPercent = value.getLineSpacingPercent(); // 예: 160
+
+        if (alignEnum != io.github.mumberrymountain.model.table.Align.Left || lineSpacingPercent != null) {
             String baseId = para.paraPrIDRef();
             para.paraPrIDRef(
-                rootRenderer.styleRenderer().renderParaStyleFromBaseAndReturnParaPrId(baseId, a)
+                    rootRenderer.styleRenderer().renderParaStyleFromBaseAndReturnParaPrId(
+                            baseId,
+                            alignEnum,
+                            lineSpacingPercent
+                    )
             );
         }
 
@@ -105,5 +116,6 @@ public class TextObjectReplacementRenderer implements ValueReplacementRenderer {
         if (RendererUtil.isCurrentRangeProcessing(rangeStack.current())) {
             rangeStack.add(linkedRunItem.parent(), placeHolder);
         }
+        
     }
 }
