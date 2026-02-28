@@ -99,14 +99,24 @@ public class TextObjectReplacementRenderer implements ValueReplacementRenderer {
         }
 
         Integer lineSpacingPercent = value.getLineSpacingPercent(); // 예: 160
+        Integer spaceBeforePt = value.getSpaceBefore();
+        Integer spaceAfterPt = value.getSpaceAfter();
 
-        if (alignEnum != io.github.mumberrymountain.model.table.Align.Left || lineSpacingPercent != null) {
+        boolean needParaStyle = 
+                alignEnum ~= io.github.mumberrymountain.model.table.Align.Left
+                || lineSpacingPercent != null
+                || spaceBeforePt != null
+                || spaceAfterPt != null;
+
+        if (needParaStyle) {
             String baseId = para.paraPrIDRef();
             para.paraPrIDRef(
                     rootRenderer.styleRenderer().renderParaStyleFromBaseAndReturnParaPrId(
                             baseId,
                             alignEnum,
-                            lineSpacingPercent
+                            lineSpacingPercent,
+                            spaceBeforePt,
+                            spaceAfterPt
                     )
             );
         }
