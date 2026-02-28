@@ -19,6 +19,9 @@ public class Text {
     private String script = "null";  // normal|sup|sub
     private String multiline = "null"; // auto|preserve|none
 
+    private Integer spaceBefore;
+    private Integer spaceAfter;
+
     public Text(String value) {
         this.value = value;
     }
@@ -98,6 +101,31 @@ public class Text {
         return this;
     }
 
+    public Text lineSpacingType(String t){
+         this.lineSpacingType = t; 
+         return this; 
+    }
+
+    public Text lineSpacingValue(Integer v){ 
+        this.lineSpacingValue = v; 
+        return this; 
+    }
+
+    public Text lineSpacingPercent(Integer percent){
+        this.lineSpacingPercent = percent;
+        return this;
+    }
+
+    public Text spaceBefore(Integer v) {
+        this.spaceBefore = v;
+        return this;
+    }
+
+    public Text spaceAfter(Integer v) {
+        this.spaceAfter = v;
+        return this;
+    }    
+
     public String getBackgroundColor() {
         return backgroundColor;
     }
@@ -157,6 +185,26 @@ public class Text {
     public String getMultiline(){
         return multiline;
     }
+
+    public String getLineSpacingType(){ 
+        return lineSpacingType; 
+    }
+
+    public Integer getLineSpacingValue(){ 
+        return lineSpacingValue; 
+    }
+
+    public Integer getLineSpacingPercent(){
+        return lineSpacingPercent;
+    }
+
+    public Integer getSpaceBefore() {
+        return spaceBefore;
+    }
+
+    public Integer getSpaceAfter() {
+        return spaceAfter;
+    }    
 
     public String getValue() { return value; }
     public void  setValue(String value) {
