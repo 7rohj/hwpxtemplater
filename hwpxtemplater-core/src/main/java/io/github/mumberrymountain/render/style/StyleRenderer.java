@@ -197,11 +197,25 @@ public class StyleRenderer {
         return (bb + gg + rr).toUpperCase(); // BGR
     }
 
+    // 260227
+    // (2개 인자) 호환 유지
     public String renderParaStyleFromBaseAndReturnParaPrId(String baseParaPrId, Align align) {
-        return renderParaStyleFromBaseAndReturnParaPrId(baseParaPrId, align, null);
+        return renderParaStyleFromBaseAndReturnParaPrId(baseParaPrId, align, null, null, null);
     }
 
+    // (3개 인자) 호환 유지: 기존 호출부(TextObjectReplacementRenderer)가 이걸 부름
     public String renderParaStyleFromBaseAndReturnParaPrId(String baseParaPrId, Align align, Integer lineSpacingPercent) {
+        return renderParaStyleFromBaseAndReturnParaPrId(baseParaPrId, align, lineSpacingPercent, null, null);
+    }
+
+    // (5개 인자) 최종: align + 줄간격 + 앞/뒤 여백(pt)
+    public String renderParaStyleFromBaseAndReturnParaPrId(
+            String baseParaPrId,
+            Align align,
+            Integer lineSpacingPercent,
+            Integer spaceBeforePt,
+            Integer spaceAfterPt
+    ) {
         if (align == null) align = Align.Left;
 
         if (baseParaPrId == null || baseParaPrId.isBlank()) {
@@ -209,8 +223,10 @@ public class StyleRenderer {
         }
 
         String key = "BASE=" + baseParaPrId
-                + "|ALIGN=" + align.name()
-                + "|LS=" + (lineSpacingPercent == null ? "null" : lineSpacingPercent);
+            + "|ALIGN=" + align.name()
+            + "|LS=" + (lineSpacingPercent == null ? "null" : lineSpacingPercent)
+            + "|SB=" + (spaceBeforePt == null ? "null" : spaceBeforePt)
+            + "|SA=" + (spaceAfterPt == null ? "null" : spaceAfterPt);
 
         if (paraPrs.containsKey(key)) return paraPrs.get(key).id();
 
@@ -247,10 +263,30 @@ public class StyleRenderer {
             cloned.lineSpacing().value(lineSpacingPercent);
         }
 
+        Integer prevHwp = (spaceBeforePt == null) ? null : spaceBeforePt * 200; // * 100?
+        Integer nextHwp = (spaceAfterPt == null) ? null : spaceAfterPt * 200;   // * 100?
+        setParaMarginPrevNext(cloned, prevHwp, nextHwp);
+
         headerXMLFile.refList().paraProperties().add(cloned);
         paraPrs.put(key, cloned);
 
         return cloned.id();
+    }
+
+    private void setParaMarginPrevNext(ParaPr paraPr, Integer prevHwpUnit, Integer nextHwpUnit) {
+        if (paraPr == null) return;
+        if (paraPr.margin() == null) paraPr.createMargin();
+
+        ParaMargin m = paraPr.margin();
+
+        if (prevHwpUnit != null) {
+            if (m.prev() == null) m.createPrev();
+            m.prev().set(prevHwpUnit, ValueUnit2.HWPUNIT);
+        }
+        if (nextHwpUnit != null) {
+            if (m.next() == null) m.createNext();
+            m.next().set(nextHwpUnit, ValueUnit2.HWPUNIT);
+        }
     }
     
 }
